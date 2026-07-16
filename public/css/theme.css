@@ -1,0 +1,700 @@
+/* theme.css */
+
+/* =========================================
+   PHASE 2: CSS VARIABLE IMPROVEMENTS
+   ========================================= */
+:root, [data-theme="light"] {
+    --color-primary:        #7052ff;
+    --color-primary-dark:   #5c40eb;
+    --color-primary-light:  rgba(112, 82, 255, 0.1);
+    --color-success:        #28a745;
+    --color-danger:         #dc3545;
+    --color-warning:        #ffc107;
+    --color-info:           #17a2b8;
+
+    --color-bg:             #f5f7fb;
+    --color-surface:        #ffffff;
+    --color-surface-hover:  #f8f9fa;
+    --color-card:           #ffffff;
+    --color-border:         #e5e7eb;
+
+    --color-text-primary:   #212529;
+    --color-text-secondary: #6c757d;
+    --color-text-muted:     #adb5bd;
+
+    --table-bg:             #ffffff;
+    --table-header:         #f8f9fa;
+    --table-border:         #e5e7eb;
+    --table-hover:          #f1f3f5;
+    --table-striped:        #f8f9fa;
+
+    --input-bg:             #ffffff;
+    --input-border:         #ced4da;
+    --input-text:           #212529;
+    --input-placeholder:    #adb5bd;
+    --input-disabled-bg:    #e9ecef;
+    --input-focus-border:   #7052ff;
+    --input-focus-shadow:   rgba(112, 82, 255, 0.25);
+
+    --dropdown-bg:          #ffffff;
+    --dropdown-border:      rgba(0,0,0,.15);
+    --dropdown-hover:       #f8f9fa;
+
+    --modal-bg:             #ffffff;
+    --modal-header:         #ffffff;
+
+    --sidebar-bg:           #ffffff;
+    --sidebar-hover:        rgba(112, 82, 255, 0.1);
+
+    --navbar-bg:            #ffffff;
+
+    --pagination-bg:        #ffffff;
+    --pagination-hover:     #e9ecef;
+    --pagination-active:    #7052ff;
+
+    --scrollbar-track:      #f1f1f1;
+    --scrollbar-thumb:      #c1c1c1;
+    --scrollbar-thumb-hover:#a8a8a8;
+
+    --badge-bg-light:       rgba(0,0,0,0.05);
+    --badge-text-light:     #212529;
+
+    --color-shadow:         rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+    --color-primary:        #7052ff;
+    --color-primary-dark:   #8a73ff;
+    --color-primary-light:  rgba(112, 82, 255, 0.2);
+    --color-success:        #2ea043;
+    --color-danger:         #da3633;
+    --color-warning:        #e3b341;
+    --color-info:           #3182ce;
+
+    --color-bg:             #0d1117;
+    --color-surface:        #161b22;
+    --color-surface-hover:  #21262d;
+    --color-card:           #161b22;
+    --color-border:         #30363d;
+
+    --color-text-primary:   #c9d1d9;
+    --color-text-secondary: #8b949e;
+    --color-text-muted:     #6e7681;
+
+    --table-bg:             #161b22;
+    --table-header:         #0d1117;
+    --table-border:         #30363d;
+    --table-hover:          #21262d;
+    --table-striped:        #1f242b;
+
+    --input-bg:             #0d1117;
+    --input-border:         #30363d;
+    --input-text:           #c9d1d9;
+    --input-placeholder:    #8b949e;
+    --input-disabled-bg:    #161b22;
+    --input-focus-border:   #58a6ff;
+    --input-focus-shadow:   rgba(88, 166, 255, 0.25);
+
+    --dropdown-bg:          #161b22;
+    --dropdown-border:      #30363d;
+    --dropdown-hover:       #21262d;
+
+    --modal-bg:             #161b22;
+    --modal-header:         #161b22;
+
+    --sidebar-bg:           #161b22;
+    --sidebar-hover:        #21262d;
+
+    --navbar-bg:            #161b22;
+
+    --pagination-bg:        #161b22;
+    --pagination-hover:     #21262d;
+    --pagination-active:    #7052ff;
+
+    --scrollbar-track:      #0d1117;
+    --scrollbar-thumb:      #30363d;
+    --scrollbar-thumb-hover:#484f58;
+
+    --badge-bg-light:       rgba(255,255,255,0.1);
+    --badge-text-light:     #c9d1d9;
+
+    --color-shadow:         rgba(0, 0, 0, 0.3);
+}
+
+/* Base and Transitions */
+body {
+    background-color: var(--color-bg) !important;
+    color: var(--color-text-primary) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+*, *::before, *::after {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disable transitions for layout structural changes */
+.sidebar, .main-wrapper, .topbar {
+    transition: width 0.3s ease, margin 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+
+/* =========================================
+   PHASE 7: SCROLLBAR
+   ========================================= */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+/* Firefox Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+
+/* =========================================
+   PHASE 8: CHROME AUTOFILL OVERRIDE
+   ========================================= */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+    -webkit-text-fill-color: var(--input-text) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+
+/* =========================================
+   PHASE 9: TEXT SELECTION
+   ========================================= */
+::selection { background-color: var(--color-primary); color: #ffffff; }
+::-moz-selection { background-color: var(--color-primary); color: #ffffff; }
+
+
+/* =========================================
+   GLOBAL OVERRIDES (REMOVING HARDCODED)
+   ========================================= */
+.bg-white, .bg-light { background-color: var(--color-surface) !important; }
+.text-dark, .text-black { color: var(--color-text-primary) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
+.text-secondary { color: var(--color-text-secondary) !important; }
+.border { border-color: var(--color-border) !important; }
+.border-top, .border-bottom, .border-start, .border-end { border-color: var(--color-border) !important; }
+
+
+/* =========================================
+   LAYOUT COMPONENTS (SIDEBAR, NAVBAR)
+   ========================================= */
+.sidebar {
+    background-color: var(--sidebar-bg);
+    border-right-color: var(--color-border);
+}
+.sidebar-logo {
+    border-bottom-color: var(--color-border);
+}
+.sidebar-nav a {
+    color: var(--color-text-secondary);
+}
+.sidebar-nav a:hover, .sidebar-nav a.active {
+    background-color: var(--sidebar-hover);
+    color: var(--color-primary);
+}
+.nav-group-label { color: var(--color-text-muted); }
+
+.topbar {
+    background-color: var(--navbar-bg);
+    border-bottom-color: var(--color-border);
+}
+
+
+/* =========================================
+   PHASE 5: BOOTSTRAP COMPONENTS
+   ========================================= */
+
+/* Cards */
+.card {
+    background-color: var(--color-card) !important;
+    border-color: var(--color-border) !important;
+    box-shadow: 0 1px 3px var(--color-shadow) !important;
+    color: var(--color-text-primary);
+}
+.card-header, .card-footer {
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+}
+.card-title, .card-text {
+    color: var(--color-text-primary);
+}
+
+/* Modals */
+.modal-content {
+    background-color: var(--modal-bg) !important;
+    border-color: var(--color-border) !important;
+}
+.modal-header {
+    background-color: var(--modal-header) !important;
+    border-bottom-color: var(--color-border) !important;
+}
+.modal-footer {
+    border-top-color: var(--color-border) !important;
+}
+.modal-title { color: var(--color-text-primary) !important; }
+[data-theme="dark"] .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* Dropdowns */
+.dropdown-menu {
+    background-color: var(--dropdown-bg) !important;
+    border-color: var(--dropdown-border) !important;
+}
+.dropdown-item { color: var(--color-text-primary) !important; }
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--dropdown-hover) !important;
+    color: var(--color-text-primary) !important;
+}
+.dropdown-divider { border-top-color: var(--color-border) !important; }
+
+/* Breadcrumb */
+.breadcrumb-item a { color: var(--color-text-secondary); }
+.breadcrumb-item.active { color: var(--color-text-primary); }
+
+/* Badges */
+.badge { color: #fff; }
+.badge.bg-light { background-color: var(--badge-bg-light) !important; color: var(--badge-text-light) !important; }
+.badge-status { color: #fff; }
+
+/* Buttons */
+.btn { color: var(--color-text-primary); }
+.btn-primary { background-color: var(--color-primary); border-color: var(--color-primary); color: #fff !important; }
+.btn-primary:hover { background-color: var(--color-primary-dark); border-color: var(--color-primary-dark); }
+.btn-outline-primary, .btn-outline-custom { color: var(--color-primary); border-color: var(--color-primary); }
+.btn-outline-primary:hover, .btn-outline-custom:hover { background-color: var(--color-primary); color: #fff; }
+
+.btn-secondary { background-color: var(--color-surface-hover); border-color: var(--color-border); color: var(--color-text-primary); }
+.btn-secondary:hover { background-color: var(--color-border); color: var(--color-text-primary); }
+
+.btn-success { background-color: var(--color-success); border-color: var(--color-success); color: #fff !important; }
+.btn-danger { background-color: var(--color-danger); border-color: var(--color-danger); color: #fff !important; }
+.btn-warning { background-color: var(--color-warning); border-color: var(--color-warning); color: #000 !important; }
+.btn-info { background-color: var(--color-info); border-color: var(--color-info); color: #fff !important; }
+
+/* Alerts */
+[data-theme="dark"] .alert-success { background-color: rgba(46, 160, 67, 0.1); color: #3fb950; border-color: rgba(46, 160, 67, 0.2); }
+[data-theme="dark"] .alert-danger { background-color: rgba(218, 54, 51, 0.1); color: #ff7b72; border-color: rgba(218, 54, 51, 0.2); }
+[data-theme="dark"] .alert-warning { background-color: rgba(227, 179, 65, 0.1); color: #d29922; border-color: rgba(227, 179, 65, 0.2); }
+[data-theme="dark"] .alert-info { background-color: rgba(49, 130, 206, 0.1); color: #79c0ff; border-color: rgba(49, 130, 206, 0.2); }
+
+
+/* =========================================
+   PHASE 3 & 12: TABLES & DATATABLES
+   ========================================= */
+.table, .table-custom, table.dataTable {
+    color: var(--color-text-primary) !important;
+    border-color: var(--table-border) !important;
+    background-color: var(--table-bg) !important;
+}
+.table thead th, .table-custom thead th, table.dataTable thead th {
+    background-color: var(--table-header) !important;
+    color: var(--color-text-primary) !important;
+    border-bottom-color: var(--table-border) !important;
+}
+.table td, .table th, .table-custom td, .table-custom th, table.dataTable td, table.dataTable th {
+    border-color: var(--table-border) !important;
+    background-color: var(--table-bg) !important;
+    color: var(--color-text-primary) !important;
+}
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th, table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
+    background-color: var(--table-hover) !important;
+}
+.table-striped tbody tr:nth-of-type(odd) td, table.dataTable.stripe tbody tr:nth-of-type(odd), table.dataTable.display tbody tr:nth-of-type(odd) {
+    background-color: var(--table-striped) !important;
+}
+.table-light, .table-white {
+    background-color: var(--table-bg) !important;
+    color: var(--color-text-primary) !important;
+}
+
+/* DataTables Specific Controls */
+div.dataTables_wrapper div.dataTables_length select,
+div.dataTables_wrapper div.dataTables_filter input {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--input-border) !important;
+}
+div.dataTables_wrapper div.dataTables_info,
+div.dataTables_wrapper div.dataTables_length label,
+div.dataTables_wrapper div.dataTables_filter label {
+    color: var(--color-text-secondary) !important;
+}
+table.dataTable.no-footer {
+    border-bottom-color: var(--table-border) !important;
+}
+
+/* DataTables Sorting Icons */
+[data-theme="dark"] table.dataTable thead .sorting,
+[data-theme="dark"] table.dataTable thead .sorting_asc,
+[data-theme="dark"] table.dataTable thead .sorting_desc {
+    background-image: none !important; /* Reset default icons to use CSS or custom */
+}
+table.dataTable thead th { position: relative; }
+
+/* Pagination (Bootstrap & DataTables) */
+.page-item .page-link {
+    background-color: var(--pagination-bg) !important;
+    border-color: var(--color-border) !important;
+    color: var(--color-text-primary) !important;
+}
+.page-item.disabled .page-link {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-muted) !important;
+}
+.page-item .page-link:hover {
+    background-color: var(--pagination-hover) !important;
+    color: var(--color-primary) !important;
+}
+.page-item.active .page-link {
+    background-color: var(--pagination-active) !important;
+    border-color: var(--pagination-active) !important;
+    color: #fff !important;
+}
+
+
+/* =========================================
+   PHASE 4: FORMS
+   ========================================= */
+.form-label {
+    color: var(--color-text-secondary) !important;
+}
+.form-control, .form-select, textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--input-border) !important;
+}
+.form-control:focus, .form-select:focus, textarea:focus {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--input-focus-border) !important;
+    box-shadow: 0 0 0 0.25rem var(--input-focus-shadow) !important;
+}
+.form-control::placeholder, textarea::placeholder {
+    color: var(--input-placeholder) !important;
+    opacity: 1; /* Override Firefox */
+}
+.form-control:disabled, .form-select:disabled, .form-control[readonly] {
+    background-color: var(--input-disabled-bg) !important;
+    color: var(--color-text-muted) !important;
+}
+.input-group-text {
+    background-color: var(--color-surface-hover) !important;
+    border-color: var(--input-border) !important;
+    color: var(--color-text-secondary) !important;
+}
+.form-check-input {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+}
+.form-check-input:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+
+/* =========================================
+   PHASE 6: JAVASCRIPT COMPONENTS
+   ========================================= */
+
+/* Select2 */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    color: var(--input-text) !important;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--color-surface-hover) !important;
+    border-color: var(--color-border) !important;
+}
+.select2-dropdown {
+    background-color: var(--dropdown-bg) !important;
+    border-color: var(--dropdown-border) !important;
+}
+.select2-container--default .select2-results__option {
+    color: var(--color-text-primary) !important;
+}
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: var(--color-primary-light) !important;
+    color: var(--color-primary) !important;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--color-primary) !important;
+    color: #fff !important;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--input-text) !important;
+}
+
+/* SweetAlert2 */
+.swal2-popup {
+    background-color: var(--modal-bg) !important;
+    color: var(--color-text-primary) !important;
+}
+.swal2-title, .swal2-html-container, .swal2-content {
+    color: var(--color-text-primary) !important;
+}
+
+/* Datepicker / Flatpickr (General fallbacks) */
+.datepicker, .flatpickr-calendar {
+    background-color: var(--dropdown-bg) !important;
+    border-color: var(--dropdown-border) !important;
+    color: var(--color-text-primary) !important;
+}
+.datepicker table tr td, .flatpickr-day {
+    color: var(--color-text-primary) !important;
+}
+.datepicker table tr td:hover, .flatpickr-day:hover {
+    background-color: var(--dropdown-hover) !important;
+}
+
+
+/* =========================================
+   PHASE 11: MASTER PRODUCT DETAIL FIXES
+   ========================================= */
+/* Ensure fake textareas (divs used as readonly boxes) adapt properly */
+div.p-3.rounded.border {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--input-border) !important;
+}
+
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background-color: var(--color-surface-hover);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.theme-toggle:hover {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+
+/* =========================================
+   PHASE 14: PRINT & PDF OVERRIDE
+   ========================================= */
+@media print {
+    :root, [data-theme="dark"], body {
+        --color-primary:        #7052ff !important;
+        --color-bg:             #ffffff !important;
+        --color-surface:        #ffffff !important;
+        --color-card:           #ffffff !important;
+        --color-text-primary:   #000000 !important;
+        --color-text-secondary: #333333 !important;
+        --color-border:         #cccccc !important;
+        --table-bg:             #ffffff !important;
+        --table-header:         #f0f0f0 !important;
+        --table-border:         #cccccc !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+    .card, .table, .modal-content {
+        box-shadow: none !important;
+        border-color: #ccc !important;
+    }
+    .sidebar, .topbar { display: none !important; }
+    .main-wrapper { margin: 0 !important; padding: 0 !important; }
+}
+/* =========================================
+   PHASE X: FULL RESPONSIVE & MOBILE OVERHAUL
+   ========================================= */
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 199;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Base Topbar Hamburger */
+.btn-hamburger {
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    padding: 4px 8px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+
+/* TABLET & MOBILE (< 992px) */
+@media (max-width: 991.98px) {
+    /* Main Wrapper */
+    .main-wrapper, .topbar {
+        margin-left: 0 !important;
+        left: 0 !important;
+    }
+    
+    /* Topbar Updates */
+    .topbar {
+        padding: 0 16px;
+    }
+    .btn-hamburger {
+        display: flex !important;
+    }
+
+    /* Offcanvas Sidebar */
+    .sidebar {
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    /* Breadcrumb truncating */
+    .breadcrumb-item:not(:first-child):not(:last-child):not(.active) {
+        display: none;
+    }
+    
+    /* Tables & DataTables Wrapping */
+    .card-body, .dataTables_wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table td, .table th, table.dataTable td, table.dataTable th {
+        padding: 8px !important;
+    }
+    
+    /* Forms Stack Logic (Col-md-6 forced to 100%) */
+    form .col-md-6 {
+        width: 100% !important;
+    }
+    
+    /* DataTables Controls Stacking */
+    div.dataTables_wrapper div.dataTables_length,
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: left;
+        margin-bottom: 12px;
+    }
+    div.dataTables_wrapper div.dataTables_filter input {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    /* Modals */
+    .modal-dialog {
+        max-width: 95vw !important;
+        margin: 1rem auto;
+    }
+    
+    /* Buttons Touch Target */
+    .btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Card Headers */
+    .card-header .d-flex {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+    
+    /* Dropdowns */
+    .dropdown-menu {
+        max-width: 90vw;
+    }
+}
+
+/* MOBILE ONLY (< 768px) */
+@media (max-width: 767.98px) {
+    .sidebar {
+        width: 250px;
+    }
+    
+    .page-content {
+        padding: 16px;
+    }
+    
+    .page-header h1 {
+        font-size: 20px;
+    }
+    
+    /* Buttons text truncation on mobile for tables */
+    .table .btn span {
+        display: none;
+    }
+    .table .btn {
+        padding: 8px 12px;
+    }
+    
+    /* DataTables Pagination Mobile */
+    div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+        justify-content: center !important;
+        flex-wrap: wrap;
+    }
+}
+
+/* DESKTOP ONLY (≥ 992px) */
+@media (min-width: 992px) {
+    .sidebar {
+        width: 280px;
+    }
+    .main-wrapper {
+        margin-left: 280px !important;
+    }
+    .topbar {
+        left: 280px !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* Hover Prevention on Touch */
+@media (hover: none) {
+    .btn:hover, .dropdown-item:hover, .sidebar-nav a:hover {
+        background-color: inherit !important;
+        color: inherit !important;
+    }
+    .btn:active, .dropdown-item:active, .sidebar-nav a:active {
+        background-color: var(--color-surface-hover) !important;
+    }
+}
+
+/* Global Fixes */
+.card { height: 100%; }
+.select2, .form-control { width: 100% !important; }
+.stat-value { white-space: nowrap; }
+.modal-dialog-scrollable .modal-content { max-height: 90vh; }
+
+h1, h2, h3, h4, h5, h6 { color: var(--color-text-primary); }
+
