@@ -29,6 +29,9 @@ class ProjectReportController extends Controller
         $salesHistory = $this->reportService->getSalesHistory($project->id);
         $purchasedMaterials = $this->reportService->getPurchasedMaterials($project->id);
         $materialUsage = $this->reportService->getMaterialUsage($project->id);
+        
+        $groupedUsage = collect($materialUsage)->groupBy('engineering_category');
+        $grandTotalMaterial = collect($materialUsage)->sum('material_cost');
 
         $serviceUsage = $this->reportService->getServiceUsage($project->id);
         $financialSummary = $this->reportService->calculateProjectMargin($projectInfo);
@@ -38,7 +41,9 @@ class ProjectReportController extends Controller
             'projectInfo', 
             'salesHistory', 
             'purchasedMaterials',
-            'materialUsage', 
+            'materialUsage',
+            'groupedUsage',
+            'grandTotalMaterial',
             'serviceUsage',
             'financialSummary'
         ));
@@ -50,6 +55,9 @@ class ProjectReportController extends Controller
         $salesHistory = $this->reportService->getSalesHistory($project->id);
         $purchasedMaterials = $this->reportService->getPurchasedMaterials($project->id);
         $materialUsage = $this->reportService->getMaterialUsage($project->id);
+
+        $groupedUsage = collect($materialUsage)->groupBy('engineering_category');
+        $grandTotalMaterial = collect($materialUsage)->sum('material_cost');
 
         $serviceUsage = $this->reportService->getServiceUsage($project->id);
         $financialSummary = $this->reportService->calculateProjectMargin($projectInfo);

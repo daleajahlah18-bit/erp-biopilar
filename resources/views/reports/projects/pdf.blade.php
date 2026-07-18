@@ -159,17 +159,32 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($materialUsage as $usage)
-            <tr>
-                <td>{{ $usage['product_name'] }}</td>
-                <td>{{ $usage['product_code'] }}</td>
-                <td class="text-center">{{ number_format($usage['quantity'], 2, ',', '.') }}</td>
-                <td>{{ $usage['unit'] }}</td>
-                <td class="text-right">{{ number_format($usage['material_cost'], 0, ',', '.') }}</td>
-            </tr>
+            @foreach($groupedUsage ?? [] as $category => $usages)
+                <tr style="background-color: #e9ecef;">
+                    <td colspan="5" style="font-weight: bold; text-transform: uppercase;">{{ $category }}</td>
+                </tr>
+                @foreach($usages as $usage)
+                <tr>
+                    <td>{{ $usage['product_name'] }}</td>
+                    <td>{{ $usage['product_code'] }}</td>
+                    <td class="text-center">{{ number_format($usage['quantity'], 2, ',', '.') }}</td>
+                    <td>{{ $usage['unit'] }}</td>
+                    <td class="text-right">{{ number_format($usage['material_cost'], 0, ',', '.') }}</td>
+                </tr>
+                @endforeach
+                <tr style="background-color: #f8f9fa;">
+                    <td colspan="4" class="text-right" style="font-weight: bold;">Subtotal {{ $category }}</td>
+                    <td class="text-right" style="font-weight: bold;">Rp {{ number_format(collect($usages)->sum('material_cost'), 0, ',', '.') }}</td>
+                </tr>
             @endforeach
-            @if(count($materialUsage) == 0)
-            <tr><td colspan="5" class="text-center">No material usage records</td></tr>
+            
+            @if(count($groupedUsage ?? []) > 0)
+                <tr>
+                    <td colspan="4" class="text-right" style="font-weight: bold; color: #4e73df;">Grand Total Material</td>
+                    <td class="text-right" style="font-weight: bold; color: #4e73df;">Rp {{ number_format($grandTotalMaterial ?? 0, 0, ',', '.') }}</td>
+                </tr>
+            @else
+                <tr><td colspan="5" class="text-center">No material usage records</td></tr>
             @endif
         </tbody>
     </table>
@@ -196,6 +211,8 @@
             @endif
         </tbody>
     </table>
+
+
 
     <div class="section-title">Section F : Financial Summary</div>
     <table style="width: 50%;">

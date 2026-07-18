@@ -265,11 +265,11 @@
     <!-- Material Usage Summary -->
     <div class="accordion-item shadow-sm border-0 mb-2">
         <h2 class="accordion-header" id="headingMaterial">
-            <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaterial" aria-expanded="false" aria-controls="collapseMaterial">
+            <button class="accordion-button py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaterial" aria-expanded="true" aria-controls="collapseMaterial">
                 <h6 class="m-0 font-weight-bold text-primary" style="font-size: 16px;">Material Usage Summary</h6>
             </button>
         </h2>
-        <div id="collapseMaterial" class="accordion-collapse collapse" aria-labelledby="headingMaterial">
+        <div id="collapseMaterial" class="accordion-collapse collapse show" aria-labelledby="headingMaterial">
             <div class="accordion-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0" style="font-size: 14px;">
@@ -283,54 +283,33 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($materialUsage as $usage)
-                            <tr>
-                                <td>{{ $usage['product_name'] }}</td>
-                                <td>{{ $usage['product_code'] }}</td>
-                                <td>{{ number_format($usage['quantity'], 2, ',', '.') }}</td>
-                                <td>{{ $usage['unit'] }}</td>
-                                <td>{{ number_format($usage['material_cost'], 0, ',', '.') }}</td>
-                            </tr>
+                            @forelse($groupedUsage ?? [] as $category => $usages)
+                                <tr class="table-secondary">
+                                    <td colspan="5" class="fw-bold text-uppercase">{{ $category }}</td>
+                                </tr>
+                                @foreach($usages as $usage)
+                                <tr>
+                                    <td>{{ $usage['product_name'] }}</td>
+                                    <td>{{ $usage['product_code'] }}</td>
+                                    <td>{{ number_format($usage['quantity'], 2, ',', '.') }}</td>
+                                    <td>{{ $usage['unit'] }}</td>
+                                    <td>{{ number_format($usage['material_cost'], 0, ',', '.') }}</td>
+                                </tr>
+                                @endforeach
+                                <tr class="bg-light">
+                                    <td colspan="4" class="fw-bold text-end">Subtotal {{ $category }}</td>
+                                    <td class="fw-bold">Rp {{ number_format(collect($usages)->sum('material_cost'), 0, ',', '.') }}</td>
+                                </tr>
                             @empty
-                            <tr><td colspan="5" class="text-center py-2 text-muted">No Material Usage recorded.</td></tr>
+                                <tr><td colspan="5" class="text-center py-2 text-muted">No Material Usage recorded.</td></tr>
                             @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- HPP Summary -->
-    <div class="accordion-item shadow-sm border-0 mb-2">
-        <h2 class="accordion-header" id="headingHppSummary">
-            <button class="accordion-button py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHppSummary" aria-expanded="true" aria-controls="collapseHppSummary">
-                <h6 class="m-0 font-weight-bold text-primary" style="font-size: 16px;">Material Cost & HPP Summary</h6>
-            </button>
-        </h2>
-        <div id="collapseHppSummary" class="accordion-collapse collapse show" aria-labelledby="headingHppSummary">
-            <div class="accordion-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0" style="font-size: 14px;">
-                        <tbody>
-                            @foreach($groupedUsage ?? [] as $category => $usages)
-                            <tr>
-                                <td class="fw-bold">{{ $category }}</td>
-                                <td class="text-end">Rp {{ number_format(collect($usages)->sum('material_cost'), 0, ',', '.') }}</td>
-                            </tr>
-                            @endforeach
-                            <tr class="bg-light">
-                                <td class="fw-bold text-primary">Total Material Cost</td>
-                                <td class="text-end fw-bold text-primary">Rp {{ number_format($grandTotalMaterial ?? 0, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td>Service Cost</td>
-                                <td class="text-end">Rp {{ number_format(collect($serviceUsage)->sum('total_subtotal'), 0, ',', '.') }}</td>
-                            </tr>
-                            <tr class="table-primary">
-                                <td class="fw-bold text-uppercase fs-6">Total HPP</td>
-                                <td class="text-end fw-bold fs-6 text-danger">Rp {{ number_format($financialSummary['total_hpp'], 0, ',', '.') }}</td>
-                            </tr>
+                            
+                            @if(count($groupedUsage ?? []) > 0)
+                                <tr>
+                                    <td colspan="4" class="fw-bold text-end text-primary">Grand Total Material</td>
+                                    <td class="fw-bold text-primary">Rp {{ number_format($grandTotalMaterial ?? 0, 0, ',', '.') }}</td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
