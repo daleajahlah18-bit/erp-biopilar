@@ -76,6 +76,12 @@ class UserController extends Controller
         return view('user-management.users.edit', compact('user', 'roles'));
     }
 
+    public function show(User $user)
+    {
+        // Graceful fallback if a form PUT request is converted to a GET request by a server redirect
+        return redirect()->route('users.index');
+    }
+
     public function update(Request $request, User $user)
     {
         $this->authorize('Users.edit');
