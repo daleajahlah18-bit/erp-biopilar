@@ -53,8 +53,14 @@ class UserController extends Controller
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = \Illuminate\Support\Str::uuid() . '.' . $file->extension();
-            \Intervention\Image\ImageManagerStatic::make($file)->encode($file->extension(), 90)->save(storage_path('app/public/user_photos/' . $filename));
-                $data['photo'] = 'user_photos/' . $filename;
+            
+            $directory = storage_path('app/public/user_photos');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            \Intervention\Image\ImageManagerStatic::make($file)->encode($file->extension(), 90)->save($directory . '/' . $filename);
+            $data['photo'] = 'user_photos/' . $filename;
         }
 
         $user = User::create($data);
@@ -98,8 +104,14 @@ class UserController extends Controller
             }
             $file = $request->file('photo');
             $filename = \Illuminate\Support\Str::uuid() . '.' . $file->extension();
-            \Intervention\Image\ImageManagerStatic::make($file)->encode($file->extension(), 90)->save(storage_path('app/public/user_photos/' . $filename));
-                $data['photo'] = 'user_photos/' . $filename;
+            
+            $directory = storage_path('app/public/user_photos');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            \Intervention\Image\ImageManagerStatic::make($file)->encode($file->extension(), 90)->save($directory . '/' . $filename);
+            $data['photo'] = 'user_photos/' . $filename;
         }
 
         $user->update($data);
