@@ -15,15 +15,17 @@
 @section('page_subtitle', 'Kelola data produk, bahan baku, dan BOM')
 
 @section('header_actions')
-<a href="{{ route('master.products.import.template') }}" class="btn btn-outline-secondary me-2">
-    <i class="bi bi-download"></i> Download Template
-</a>
-<button type="button" class="btn btn-info text-white me-2" data-bs-toggle="modal" data-bs-target="#importModal">
-    <i class="bi bi-file-earmark-excel"></i> Import From Excel
-</button>
-<a href="{{ route('master.products.create') }}" class="btn-primary-custom">
-    <i class="bi bi-plus-lg"></i> Tambah Produk
-</a>
+<div class="d-flex flex-wrap gap-2 justify-content-md-end">
+    <a href="{{ route('master.products.import.template') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-download"></i> Download Template
+    </a>
+    <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#importModal">
+        <i class="bi bi-file-earmark-excel"></i> Import From Excel
+    </button>
+    <a href="{{ route('master.products.create') }}" class="btn-primary-custom">
+        <i class="bi bi-plus-lg"></i> Tambah Produk
+    </a>
+</div>
 @endsection
 
 @section('content')
@@ -101,20 +103,19 @@
 @endif
 
 <div class="card mb-4">
-    <div class="card-body">
-        <form action="{{ route('master.products.index') }}" method="GET" class="row g-3 align-items-center">
-            <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Cari Kode, Nama, Tipe..." value="{{ request('search') }}">
-                </div>
+    <div class="card-body py-3">
+        <form action="{{ route('master.products.index') }}" method="GET" class="d-flex align-items-center gap-2">
+            <div class="flex-grow-1">
+                <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan Kode, Nama, atau Tipe Produk..." value="{{ request('search') }}">
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Cari</button>
+            <div>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-search me-1"></i> Cari
+                </button>
             </div>
             @if(request()->filled('search'))
-            <div class="col-md-2">
-                <a href="{{ route('master.products.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
+            <div>
+                <a href="{{ route('master.products.index') }}" class="btn btn-outline-secondary">Reset</a>
             </div>
             @endif
         </form>
