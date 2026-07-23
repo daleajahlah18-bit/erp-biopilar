@@ -20,6 +20,14 @@ Route::middleware('auth')->group(function () {
 
     // Master Data
     Route::prefix('master')->name('master.')->group(function () {
+        // Products Import Routes
+        Route::prefix('products/import')->name('products.import.')->middleware('permission:products.import')->group(function () {
+            Route::get('template', [\App\Http\Controllers\Master\ProductController::class, 'downloadTemplate'])->name('template');
+            Route::post('upload', [\App\Http\Controllers\Master\ProductController::class, 'uploadImport'])->name('upload');
+            Route::post('process', [\App\Http\Controllers\Master\ProductController::class, 'processImport'])->name('process');
+            Route::get('errors/{id}', [\App\Http\Controllers\Master\ProductController::class, 'downloadErrors'])->name('errors');
+        });
+
         Route::resource('products', App\Http\Controllers\Master\ProductController::class)->middleware('permission:products.visible');
         Route::resource('suppliers', App\Http\Controllers\Master\SupplierController::class)->middleware('permission:suppliers.visible');
         Route::resource('units', App\Http\Controllers\Master\UnitController::class)->middleware('permission:units.visible');

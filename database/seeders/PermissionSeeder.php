@@ -21,7 +21,7 @@ class PermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $menus = SystemMenu::all();
-        $actions = ['visible', 'view', 'create', 'edit', 'delete', 'approve', 'export', 'print'];
+        $actions = ['visible', 'view', 'create', 'edit', 'delete', 'approve', 'export', 'import', 'print'];
 
         foreach ($menus as $menu) {
             $menuSlug = Str::slug($menu->name, '_');

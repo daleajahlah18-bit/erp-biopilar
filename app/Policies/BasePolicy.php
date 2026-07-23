@@ -50,4 +50,9 @@ abstract class BasePolicy
     {
         return $user->can($this->module . '.approve');
     }
+
+    public function import(User $user, $model = null)
+    {
+        return $user->can($this->module . '.import');
+    }
 }
