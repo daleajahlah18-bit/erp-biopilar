@@ -13,8 +13,8 @@
         "kyslik/column-sortable": "^8.0",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7",
-        "maatwebsite/excel": "^1.1",
+        "laravel/tinker": "^2.8",
+        "maatwebsite/excel": "^3.1",
         "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-permission": "^6.25"
     },
