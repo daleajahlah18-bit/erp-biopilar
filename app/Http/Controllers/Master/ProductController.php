@@ -106,6 +106,10 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // Free up the product code so it can be reused later
+        $product->update([
+            'product_code' => $product->product_code . '-deleted-' . time()
+        ]);
         $product->delete();
         return redirect()->route('master.products.index')->with('success', 'Produk berhasil dihapus.');
     }
