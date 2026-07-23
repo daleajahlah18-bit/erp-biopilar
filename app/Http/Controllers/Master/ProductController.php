@@ -153,7 +153,11 @@ class ProductController extends Controller
             return [strtolower($key) => $item];
         })->toArray();
 
-        $existingProductCodes = Product::withTrashed()->pluck('product_code')->map(function($item) {
+        $existingActiveCodes = Product::pluck('product_code')->map(function($item) {
+            return strtolower($item);
+        })->toArray();
+
+        $existingTrashedCodes = Product::onlyTrashed()->pluck('product_code')->map(function($item) {
             return strtolower($item);
         })->toArray();
 
@@ -172,6 +176,7 @@ class ProductController extends Controller
         $parsedRows = [];
         $validCount = 0;
         $invalidCount = 0;
+        $skippedCount = 0;
         $errorSummary = [];
 
         $intraFileCodes = [];
@@ -190,6 +195,8 @@ class ProductController extends Controller
         foreach ($data as $index => $row) {
             $status = 'Ready';
             $errors = [];
+            $isDuplicate = false;
+            $duplicateMsg = '';
 
             // Ignore completely empty rows
             if (empty(array_filter($row->toArray()))) {
@@ -205,9 +212,14 @@ class ProductController extends Controller
             if (empty($productCode)) {
                 $errors[] = "Product Code Required";
             } else {
-                if (in_array(strtolower($productCode), $existingProductCodes)) {
-                    $errors[] = "Product Code $productCode already exists";
+                if (in_array(strtolower($productCode), $existingActiveCodes)) {
+                    $isDuplicate = true;
+                    $duplicateMsg = 'Already Exists (Skipped)';
+                } elseif (in_array(strtolower($productCode), $existingTrashedCodes)) {
+                    $isDuplicate = true;
+                    $duplicateMsg = 'Already Exists in Trash (Skipped)';
                 }
+                
                 if ($intraFileCodes[strtolower($productCode)] > 1) {
                     $errors[] = "Duplicate inside Excel";
                 }
@@ -231,7 +243,10 @@ class ProductController extends Controller
                 $errors[] = "Unit not found";
             }
 
-            if (count($errors) > 0) {
+            if ($isDuplicate) {
+                $status = 'Skipped';
+                $skippedCount++;
+            } elseif (count($errors) > 0) {
                 $status = 'Failed';
                 $invalidCount++;
                 foreach ($errors as $error) {
@@ -243,7 +258,7 @@ class ProductController extends Controller
 
             $parsedRows[] = [
                 'status' => $status,
-                'errors' => implode(", ", $errors),
+                'errors' => $isDuplicate ? $duplicateMsg : implode(", ", $errors),
                 'product_code' => $productCode,
                 'product_name' => $productName,
                 'product_type_raw' => $row['product_type'] ?? '',
@@ -265,6 +280,7 @@ class ProductController extends Controller
             'expired_at' => now()->addMinutes(30),
             'total_rows' => count($parsedRows),
             'valid_rows' => $validCount,
+            'skipped_rows' => $skippedCount,
             'invalid_rows' => $invalidCount,
             'error_summary' => $errorSummary,
             'data' => $parsedRows
@@ -339,7 +355,7 @@ class ProductController extends Controller
         return redirect()->route('master.products.index')->with('import_success', [
             'total' => $sessionData['total_rows'],
             'imported' => count($validRowsToInsert),
-            'skipped' => 0, // In this case we skip failed ones, but skipped means existing rows skipped in future. Let's call failed rows 'Failed'.
+            'skipped' => $sessionData['skipped_rows'],
             'failed' => $sessionData['invalid_rows'],
             'duration' => $duration,
             'import_id' => $importId

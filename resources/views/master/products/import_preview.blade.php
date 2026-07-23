@@ -16,43 +16,51 @@
 @section('page_subtitle', 'Review your data before committing to the database.')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-3">
+<div class="row mb-4 g-2">
+    <div class="col-md-2">
         <div class="card bg-primary text-white h-100">
-            <div class="card-body">
-                <h6 class="card-title">Total Rows</h6>
-                <h2 class="mb-0">{{ $sessionData['total_rows'] }}</h2>
+            <div class="card-body p-3">
+                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Total Rows</h6>
+                <h3 class="mb-0">{{ $sessionData['total_rows'] }}</h3>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="card bg-success text-white h-100">
-            <div class="card-body">
-                <h6 class="card-title">Ready / Valid</h6>
-                <h2 class="mb-0">{{ $sessionData['valid_rows'] }}</h2>
+            <div class="card-body p-3">
+                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Ready / Valid</h6>
+                <h3 class="mb-0">{{ $sessionData['valid_rows'] }}</h3>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white h-100">
+            <div class="card-body p-3">
+                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Skipped (Exists)</h6>
+                <h3 class="mb-0">{{ $sessionData['skipped_rows'] ?? 0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
         <div class="card bg-danger text-white h-100">
-            <div class="card-body">
-                <h6 class="card-title">Failed / Invalid</h6>
-                <h2 class="mb-0">{{ $sessionData['invalid_rows'] }}</h2>
+            <div class="card-body p-3">
+                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Failed / Invalid</h6>
+                <h3 class="mb-0">{{ $sessionData['invalid_rows'] }}</h3>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card h-100">
-            <div class="card-body">
-                <h6 class="card-title">Error Summary</h6>
+            <div class="card-body p-3">
+                <h6 class="card-title text-muted mb-1" style="font-size: 0.8rem;">Error Summary</h6>
                 @if(count($sessionData['error_summary']) > 0)
-                    <ul class="list-unstyled mb-0" style="max-height: 80px; overflow-y: auto;">
+                    <ul class="list-unstyled mb-0" style="max-height: 50px; overflow-y: auto; font-size: 0.85rem;">
                         @foreach($sessionData['error_summary'] as $errorMsg => $count)
-                            <li class="text-danger small"><i class="bi bi-x-circle me-1"></i> {{ $errorMsg }}: <strong>{{ $count }}</strong></li>
+                            <li class="text-danger"><i class="bi bi-x-circle me-1"></i> {{ $errorMsg }}: <strong>{{ $count }}</strong></li>
                         @endforeach
                     </ul>
                 @else
-                    <div class="text-success small mt-2"><i class="bi bi-check-circle me-1"></i> All data is valid!</div>
+                    <div class="text-success small mt-1"><i class="bi bi-check-circle me-1"></i> No errors</div>
                 @endif
             </div>
         </div>
@@ -86,10 +94,17 @@
                 </thead>
                 <tbody>
                     @foreach($sessionData['data'] as $row)
-                    <tr class="status-row {{ $row['status'] == 'Ready' ? 'table-success' : 'table-danger' }}" data-status="{{ $row['status'] }}">
+                    @php
+                        $rowClass = '';
+                        if ($row['status'] == 'Failed') $rowClass = 'table-danger';
+                        elseif ($row['status'] == 'Skipped') $rowClass = 'table-secondary';
+                    @endphp
+                    <tr class="status-row {{ $rowClass }}" data-status="{{ $row['status'] }}">
                         <td>
                             @if($row['status'] == 'Ready')
                                 <span class="badge bg-success"><i class="bi bi-check-circle"></i> Ready</span>
+                            @elseif($row['status'] == 'Skipped')
+                                <span class="badge bg-secondary"><i class="bi bi-skip-forward"></i> Skipped</span>
                             @else
                                 <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Failed</span>
                             @endif
