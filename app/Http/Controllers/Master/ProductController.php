@@ -153,7 +153,7 @@ class ProductController extends Controller
             return [strtolower($key) => $item];
         })->toArray();
 
-        $existingProductCodes = Product::pluck('product_code')->map(function($item) {
+        $existingProductCodes = Product::withTrashed()->pluck('product_code')->map(function($item) {
             return strtolower($item);
         })->toArray();
 
@@ -312,6 +312,15 @@ class ProductController extends Controller
         try {
             Product::insert($validRowsToInsert);
             DB::commit();
+
+            // Prevent double-insertion if user refreshes the page by clearing valid rows from cache
+            foreach ($sessionData['data'] as &$row) {
+                if ($row['status'] == 'Ready') {
+                    $row['status'] = 'Imported';
+                }
+            }
+            Cache::put('import_products_' . $importId, $sessionData, now()->addMinutes(30));
+
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('master.products.index')->with('error', 'Terjadi kesalahan sistem saat import: ' . $e->getMessage());
