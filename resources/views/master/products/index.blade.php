@@ -100,6 +100,27 @@
 </div>
 @endif
 
+<div class="card mb-4">
+    <div class="card-body">
+        <form action="{{ route('master.products.index') }}" method="GET" class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Cari Kode, Nama, Tipe..." value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Cari</button>
+            </div>
+            @if(request()->filled('search'))
+            <div class="col-md-2">
+                <a href="{{ route('master.products.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
+            </div>
+            @endif
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body p-0">
         <div class="table-responsive">

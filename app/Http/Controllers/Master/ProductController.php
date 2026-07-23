@@ -21,10 +21,22 @@ class ProductController extends Controller
         $this->authorizeResource(Product::class, strtolower('Product'));
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $products = Product::with(['unit', 'creator'])->sortable()->latest()->sortable()->paginate(10);
-        
+        $query = Product::with(['unit', 'creator'])->sortable()->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('product_code', 'like', "%{$search}%")
+                  ->orWhere('product_name', 'like', "%{$search}%")
+                  ->orWhere('product_type', 'like', "%{$search}%")
+                  ->orWhere('engineering_category', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->paginate(10)->appends($request->query());
+
         $recentImports = \Spatie\Activitylog\Models\Activity::where('log_name', 'bulk_import')
             ->where('subject_type', Product::class)
             ->latest()
