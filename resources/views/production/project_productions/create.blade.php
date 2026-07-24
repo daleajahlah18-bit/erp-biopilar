@@ -21,119 +21,101 @@
         <form action="{{ route('production.project-productions.store') }}" method="POST" id="ppForm">
             @csrf
             
-            <div class="card mb-3 h-auto">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Header Dokumen</h6>
-    </div>
-    <div class="card-body">
-        <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">No Dokumen</label>
-                    <input type="text" class="form-control " placeholder="Auto Generate" readonly>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Tanggal <span class="text-danger">*</span></label>
-                    <input type="date" name="production_date" class="form-control" required value="{{ date('Y-m-d') }}">
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Project <span class="text-danger">*</span></label>
-                    <select name="project_id" class="form-select" required>
-                        <option value="">-- Pilih Project --</option>
-                        @foreach($projects as $proj)
-                            <option value="{{ $proj->id }}">{{ $proj->project_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Gudang Asal <span class="text-danger">*</span></label>
-                    <select name="warehouse_id" id="warehouseSelect" class="form-select" required>
-                        <option value="">-- Pilih Gudang --</option>
-                        @foreach($warehouses as $wh)
-                            <option value="{{ $wh->id }}">{{ $wh->warehouse_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Catatan / Keterangan</label>
-                    <input type="text" name="notes" class="form-control" placeholder="Tujuan pemakaian...">
-                </div>
-            </div>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3 text-primary" style="font-weight: 600;">Header Dokumen</h5>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">No Dokumen</label>
+                            <input type="text" class="form-control " placeholder="Auto Generate" readonly>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                            <input type="date" name="production_date" class="form-control" required value="{{ date('Y-m-d') }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Project <span class="text-danger">*</span></label>
+                            <select name="project_id" class="form-select" required>
+                                <option value="">-- Pilih Project --</option>
+                                @foreach($projects as $proj)
+                                    <option value="{{ $proj->id }}">{{ $proj->project_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Gudang Asal <span class="text-danger">*</span></label>
+                            <select name="warehouse_id" id="warehouseSelect" class="form-select" required>
+                                <option value="">-- Pilih Gudang --</option>
+                                @foreach($warehouses as $wh)
+                                    <option value="{{ $wh->id }}">{{ $wh->warehouse_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Catatan / Keterangan</label>
+                            <input type="text" name="notes" class="form-control" placeholder="Tujuan pemakaian...">
+                        </div>
+                    </div>
 
-        </div>
-    </div>
-</div>
+                    <hr class="my-4">
 
-<div class="card mb-3 h-auto">
-            <div class="card-header  py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Daftar Pemakaian Barang</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-custom">
-                        <thead class="">
-                            <tr>
-                                <th width="35%">Product / Barang</th>
-                                <th width="15%">Unit</th>
-                                <th width="20%">Stock Tersedia</th>
-                                <th width="20%">Qty Dipakai</th>
-                                <th width="10%" class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsTbody">
-                            <!-- Dynamic Rows -->
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="5">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddItem">
-                                        <i class="bi bi-plus-circle"></i> Tambah Barang
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-primary m-0" style="font-weight: 600;">Daftar Pemakaian Barang</h5>
+                        <button type="button" class="btn btn-sm btn-success" id="btnAddItem">
+                            <i class="bi bi-plus-circle"></i> Tambah Barang
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="35%">Product / Barang</th>
+                                    <th width="15%">Unit</th>
+                                    <th width="20%">Stock Tersedia</th>
+                                    <th width="20%">Qty Dipakai</th>
+                                    <th width="10%" class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-primary m-0" style="font-weight: 600;">Jasa / Biaya Tambahan</h5>
+                        <button type="button" class="btn btn-sm btn-success" id="btnAddService">
+                            <i class="bi bi-plus-circle"></i> Tambah Jasa
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="35%">Nama Jasa</th>
+                                    <th width="15%">Qty</th>
+                                    <th width="20%">Harga Satuan</th>
+                                    <th width="20%">Subtotal</th>
+                                    <th width="10%" class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ route('production.project-productions.index') }}" class="btn-outline-custom text-decoration-none">Batal</a>
+                        <button type="submit" class="btn-primary-custom"><i class="bi bi-save"></i> Simpan Project Fabrication</button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mb-3 h-auto">
-            <div class="card-header  py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Jasa / Biaya Tambahan</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-custom">
-                        <thead class="">
-                            <tr>
-                                <th width="35%">Nama Jasa</th>
-                                <th width="15%">Qty</th>
-                                <th width="20%">Harga Satuan</th>
-                                <th width="20%">Subtotal</th>
-                                <th width="10%" class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="servicesTbody">
-                            <!-- Dynamic Rows -->
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="5">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddService">
-                                        <i class="bi bi-plus-circle"></i> Tambah Jasa
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-end mb-4">
-            <a href="{{ route('production.project-productions.index') }}" class="btn btn-secondary">Batal</a>
-            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan Project Fabrication</button>
-        </div>
-</form>
+        </form>
 
 <div id="productOptions" style="display:none;">
     <option value="">-- Pilih Barang --</option>

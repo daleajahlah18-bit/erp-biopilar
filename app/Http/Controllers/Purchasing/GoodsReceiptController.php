@@ -74,8 +74,8 @@ class GoodsReceiptController extends Controller
             $po = PurchaseOrder::with('details')->find($request->purchase_order_id);
             // Anda mungkin perlu terms of payment supplier
             // Asumsi supplier memiliki relasi ke PO
-            $PR->load('supplier');
-            $terms = $PR->supplier->payment_terms ?? 0;
+            $po->load('supplier');
+            $terms = $po->supplier->payment_terms ?? 0;
 
             foreach ($request->items as $item) {
                 if ($item['qty_received'] > $item['qty_po']) {
@@ -102,7 +102,7 @@ class GoodsReceiptController extends Controller
                     );
 
                     // Kalkulasi total bayar
-                    $poDetail = $PR->details->where('product_id', $item['product_id'])->first();
+                    $poDetail = $po->details->where('product_id', $item['product_id'])->first();
                     $unitPrice = $poDetail ? $poDetail->unit_price : 0;
                     $totalAmount += ($item['qty_received'] * $unitPrice);
                 }

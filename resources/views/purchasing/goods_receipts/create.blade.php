@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Mengambil data PO...</td></tr>';
         
-        fetch(`/purchasing/goods-receipts/api/PR-details/${poId}`)
+        fetch(`{{ url('purchasing/goods-receipts/api/po-details') }}/${poId}`)
             .then(response => response.json())
             .then(data => {
                 tbody.innerHTML = '';
