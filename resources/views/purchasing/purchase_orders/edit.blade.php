@@ -110,7 +110,7 @@
             </select>
         </td>
         <td>
-            <select name="items[{idx}][unit_id]" class="form-select" required>
+            <select name="items[{idx}][unit_id]" class="form-select unit-select" required>
                 <option value="">-- Unit --</option>
                 @foreach($units as $unit)
                     <option value="{{ $unit->id }}">{{ $unit->unit_name }}</option>
@@ -139,13 +139,25 @@
 </template>
 @endsection
 
-@stack('scripts')
+@push('scripts')
+<script src="{{ asset('js/modules/product-autofill.js') }}?v={{ time() }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Disimpan',
+            html: '{!! implode("<br>", $errors->all()) !!}'
+        });
+    @endif
+
     let itemIndex = 0;
     const tbody = document.getElementById('itemsTbody');
     const template = document.getElementById('rowTemplate').innerHTML;
     const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+
+    // Initialize AutoFill module
+    const autoFill = new ProductAutoFill({ container: '#itemsTbody' });
 
     function formatRupiah(number) {
         return new Intl.NumberFormat('id-ID').format(number);
@@ -178,21 +190,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('is_ppn').addEventListener('change', calculateTotal);
 
-    function addItemRow(existingData = null) {
+    function addItemRow(data = null) {
         const tr = document.createElement('tr');
         tr.innerHTML = template.replaceAll('{idx}', itemIndex++);
         tbody.appendChild(tr);
 
-        // Populate existing data if available
-        if (existingData) {
-            tr.querySelector('select[name$="[product_id]"]').value = existingData.product_id;
-            tr.querySelector('select[name$="[unit_id]"]').value = existingData.unit_id;
-            tr.querySelector('.input-qty').value = existingData.quantity;
-            tr.querySelector('.input-price').value = existingData.unit_price;
-        }
+        const productSelect = $(tr).find('.product-select');
+        const unitSelect = $(tr).find('.unit-select');
 
         // Initialize Select2 on the new row
-        $(tr).find('.product-select').select2({
+        productSelect.select2({
+            placeholder: '-- Pilih --',
+            allowClear: true,
+            width: '100%'
+        });
+        
+        unitSelect.select2({
             placeholder: '-- Pilih --',
             allowClear: true,
             width: '100%'
@@ -203,13 +216,21 @@ document.addEventListener('DOMContentLoaded', function() {
         tr.querySelector('.input-price').addEventListener('input', calculateTotal);
         
         tr.querySelector('.btn-remove-item').addEventListener('click', function() {
-            $(tr).find('.product-select').select2('destroy');
+            productSelect.select2('destroy');
+            unitSelect.select2('destroy');
             tr.remove();
             calculateTotal();
         });
-        
-        if (existingData) {
-            calculateTotal();
+
+        if (data) {
+            productSelect.val(data.product_id).trigger('change');
+            unitSelect.val(data.unit_id).trigger('change');
+            tr.querySelector('.input-qty').value = data.quantity;
+            tr.querySelector('.input-price').value = Math.floor(data.unit_price);
+            
+            // Calculate initial subtotal
+            const subtotal = data.quantity * data.unit_price;
+            tr.querySelector('.input-subtotal').value = formatRupiah(subtotal);
         }
     }
 
@@ -223,12 +244,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Catch HTML5 validation failures (tooltips might be hidden by .table-responsive)
+    document.getElementById('poForm').addEventListener('invalid', function(e) {
+        e.preventDefault();
+        notifyError('Validasi Gagal', 'Harap lengkapi field wajib yang masih kosong atau tidak valid (seperti Harga atau Qty).');
+    }, true);
+
     // Populate existing PO details
     const existingDetails = @json($purchase_order->details);
     if (existingDetails && existingDetails.length > 0) {
-        existingDetails.forEach(detail => addItemRow(detail));
+        existingDetails.forEach(detail => {
+            addItemRow(detail);
+        });
     } else {
         addItemRow();
     }
+    
+    // Initial calculation
+    calculateTotal();
 });
 </script>
+@endpush

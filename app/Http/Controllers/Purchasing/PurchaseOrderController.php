@@ -85,12 +85,12 @@ class PurchaseOrderController extends Controller
             ]);
 
             foreach ($itemsData as $data) {
-                $PR->details()->create($data);
+                $po->details()->create($data);
             }
 
             DB::commit();
 
-            return redirect()->route('purchasing.purchase-orders.show', $PR->id)
+            return redirect()->route('purchasing.purchase-orders.show', $po->id)
                              ->with('success', 'Purchase Release berhasil dibuat.');
 
         } catch (\Exception $e) {

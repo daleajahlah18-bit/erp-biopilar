@@ -16,41 +16,41 @@
 @section('page_subtitle', 'Review your data before committing to the database.')
 
 @section('content')
-<div class="row mb-4 g-2">
+<div class="row mb-4 g-3">
     <div class="col-md-2">
-        <div class="card bg-primary text-white h-100">
+        <div class="card h-100 border-start border-primary border-4 shadow-sm">
             <div class="card-body p-3">
-                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Total Rows</h6>
-                <h3 class="mb-0">{{ $sessionData['total_rows'] }}</h3>
+                <h6 class="card-title text-muted mb-1" style="font-size: 0.8rem;">Total Rows</h6>
+                <h3 class="mb-0 text-primary">{{ $sessionData['total_rows'] }}</h3>
             </div>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="card bg-success text-white h-100">
+        <div class="card h-100 border-start border-success border-4 shadow-sm">
             <div class="card-body p-3">
-                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Ready / Valid</h6>
-                <h3 class="mb-0">{{ $sessionData['valid_rows'] }}</h3>
+                <h6 class="card-title text-muted mb-1" style="font-size: 0.8rem;">Ready / Valid</h6>
+                <h3 class="mb-0 text-success">{{ $sessionData['valid_rows'] }}</h3>
             </div>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="card bg-secondary text-white h-100">
+        <div class="card h-100 border-start border-secondary border-4 shadow-sm">
             <div class="card-body p-3">
-                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Skipped (Exists)</h6>
-                <h3 class="mb-0">{{ $sessionData['skipped_rows'] ?? 0 }}</h3>
+                <h6 class="card-title text-muted mb-1" style="font-size: 0.8rem;">Skipped (Exists)</h6>
+                <h3 class="mb-0 text-secondary">{{ $sessionData['skipped_rows'] ?? 0 }}</h3>
             </div>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="card bg-danger text-white h-100">
+        <div class="card h-100 border-start border-danger border-4 shadow-sm">
             <div class="card-body p-3">
-                <h6 class="card-title text-white-50 mb-1" style="font-size: 0.8rem;">Failed / Invalid</h6>
-                <h3 class="mb-0">{{ $sessionData['invalid_rows'] }}</h3>
+                <h6 class="card-title text-muted mb-1" style="font-size: 0.8rem;">Failed / Invalid</h6>
+                <h3 class="mb-0 text-danger">{{ $sessionData['invalid_rows'] }}</h3>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card h-100">
+        <div class="card h-100 shadow-sm">
             <div class="card-body p-3">
                 <h6 class="card-title text-muted mb-1" style="font-size: 0.8rem;">Error Summary</h6>
                 @if(count($sessionData['error_summary']) > 0)

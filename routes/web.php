@@ -11,6 +11,9 @@ Route::get('/', function () {
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // API Routes for internal AJAX calls
+    Route::get('/api/products/{id}', [\App\Http\Controllers\Api\ProductApiController::class, 'show'])->name('api.products.show');
+
     Route::get('/download/{module}/{id}/{field}', [\App\Http\Controllers\DownloadController::class, 'download'])->name('download');
     Route::get('/display/{module}/{id}/{field}', [\App\Http\Controllers\DownloadController::class, 'display'])->name('display');
 

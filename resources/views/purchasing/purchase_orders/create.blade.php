@@ -109,7 +109,7 @@
             </select>
         </td>
         <td>
-            <select name="items[{idx}][unit_id]" class="form-select" required>
+            <select name="items[{idx}][unit_id]" class="form-select unit-select" required>
                 <option value="">-- Unit --</option>
                 @foreach($units as $unit)
                     <option value="{{ $unit->id }}">{{ $unit->unit_name }}</option>
@@ -138,13 +138,25 @@
 </template>
 @endsection
 
-@stack('scripts')
+@push('scripts')
+<script src="{{ asset('js/modules/product-autofill.js') }}?v={{ time() }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Disimpan',
+            html: '{!! implode("<br>", $errors->all()) !!}'
+        });
+    @endif
+
     let itemIndex = 0;
     const tbody = document.getElementById('itemsTbody');
     const template = document.getElementById('rowTemplate').innerHTML;
     const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+
+    // Initialize AutoFill module
+    const autoFill = new ProductAutoFill({ container: '#itemsTbody' });
 
     function formatRupiah(number) {
         return new Intl.NumberFormat('id-ID').format(number);
@@ -210,7 +222,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Catch HTML5 validation failures (tooltips might be hidden by .table-responsive)
+    document.getElementById('poForm').addEventListener('invalid', function(e) {
+        e.preventDefault();
+        notifyError('Validasi Gagal', 'Harap lengkapi field wajib yang masih kosong atau tidak valid (seperti Harga atau Qty).');
+    }, true);
+
     // Add first row by default
     addItemRow();
 });
 </script>
+@endpush
