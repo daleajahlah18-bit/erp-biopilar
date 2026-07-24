@@ -145,8 +145,13 @@
 
                     <!-- Password -->
                     <div class="mb-2">
-                        <input id="password" type="password" name="password" required autocomplete="current-password" 
-                            class="form-control" placeholder="Password" />
+                        <div class="position-relative">
+                            <input id="password" type="password" name="password" required autocomplete="current-password" 
+                                class="form-control pe-5" placeholder="Password" />
+                            <span class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" id="togglePassword">
+                                <i class="bi bi-eye text-muted" id="toggleIcon"></i>
+                            </span>
+                        </div>
                         @error('password')
                             <div class="text-danger mt-1 small">{{ $message }}</div>
                         @enderror
@@ -184,4 +189,20 @@
         </div>
     </div>
 </body>
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+        }
+    });
+</script>
 </html>
