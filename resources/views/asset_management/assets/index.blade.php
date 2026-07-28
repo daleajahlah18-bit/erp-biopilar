@@ -3,6 +3,15 @@
 @section('page_title', 'Master Assets')
 
 @section('header_actions')
+<a href="{{ route('asset-management.assets.export') }}" class="btn btn-success" id="btnExport" title="Export current view to Excel">
+    <i class="bi bi-file-excel"></i> Export Excel
+</a>
+<a href="{{ route('asset-management.assets.import.template') }}" class="btn btn-outline-success">
+    <i class="bi bi-download"></i> Download Template
+</a>
+<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#importModal">
+    <i class="bi bi-upload"></i> Import From Excel
+</button>
 <a href="{{ route('asset-management.assets.create') }}" class="btn btn-primary">
     <i class="bi bi-plus"></i> New Asset
 </a>
@@ -42,7 +51,14 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('asset-management.assets.show', $asset->id) }}" class="btn btn-sm btn-info text-white">Detail</a>
+                            <div class="d-flex gap-1">
+                                <a href="{{ route('asset-management.assets.show', $asset->id) }}" class="btn btn-sm btn-info text-white"><i class="bi bi-eye"></i> Detail</a>
+                                <form action="{{ route('asset-management.assets.destroy', $asset->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus asset ini? Data yang dihapus tidak dapat dikembalikan.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -51,4 +67,50 @@
         </div>
     </div>
 </div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('asset-management.assets.import.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Assets from Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Upload Excel File (.xlsx, .xls)</label>
+                        <input class="form-control" type="file" id="file" name="file" accept=".xlsx,.xls" required>
+                    </div>
+                    <div class="alert alert-info py-2 mb-0">
+                        <small>Pastikan Anda sudah mengunduh template terbaru melalui tombol <strong>Download Template</strong> dan mengisi data sesuai instruksi.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-upload"></i> Upload & Preview</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    // Ensure export button respects current DataTables/URL search filters if any
+    document.getElementById('btnExport').addEventListener('click', function(e) {
+        e.preventDefault();
+        let currentUrl = window.location.href;
+        let exportUrl = new URL(this.href);
+        
+        let searchParams = new URLSearchParams(window.location.search);
+        searchParams.forEach((value, key) => {
+            exportUrl.searchParams.append(key, value);
+        });
+        
+        window.location.href = exportUrl.toString();
+    });
+</script>
+@endpush

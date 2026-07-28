@@ -197,6 +197,13 @@ Route::prefix('asset-management')->name('asset-management.')->middleware('auth')
     });
     
     Route::middleware('permission:master_assets.visible')->group(function () {
+        // Excel Import Export
+        Route::get('assets/export', [\App\Http\Controllers\AssetManagement\AssetController::class, 'export'])->name('assets.export');
+        Route::get('assets/import/template', [\App\Http\Controllers\AssetManagement\AssetController::class, 'downloadTemplate'])->name('assets.import.template');
+        Route::post('assets/import/upload', [\App\Http\Controllers\AssetManagement\AssetController::class, 'uploadImport'])->name('assets.import.upload');
+        Route::post('assets/import/process', [\App\Http\Controllers\AssetManagement\AssetController::class, 'processImport'])->name('assets.import.process');
+        Route::get('assets/import/errors/{id}', [\App\Http\Controllers\AssetManagement\AssetController::class, 'downloadErrors'])->name('assets.import.errors');
+
         Route::resource('assets', \App\Http\Controllers\AssetManagement\AssetController::class);
         
         // Asset sub-actions
