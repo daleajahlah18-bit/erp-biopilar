@@ -68,7 +68,10 @@
             font-size: 17px;
         }
 
-        .sidebar-logo .logo-text span { color: var(--color-primary); }
+        .sidebar-logo .logo-text {
+            font-size: 1.15rem; font-weight: 700; color: #1e293b;
+            letter-spacing: -0.01em; white-space: nowrap;
+        }
 
         .sidebar-nav {
             padding: 10px 0;
@@ -442,11 +445,9 @@
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-icon">
-                <i class="bi bi-box-seam"></i>
-            </div>
+            <img src="{{ asset('logo11.png') }}" alt="Logo" style="width: 34px; height: auto;">
             <div class="logo-text">
-                ERP <span>Bio Pilar</span>
+                ERP Bio Pilar
             </div>
         </div>
 
