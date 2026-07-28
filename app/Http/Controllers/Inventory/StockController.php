@@ -2,7 +2,11 @@
 namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Stock;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Excel\Exports\InventoryStockExport;
+use Carbon\Carbon;
 
 class StockController extends Controller
 {
@@ -24,8 +28,42 @@ class StockController extends Controller
             ->latest()
             ->sortable()->paginate(15)->withQueryString(); 
             
-        $warehouses = \App\Models\Warehouse::all();
+        $warehouses = Warehouse::all();
             
         return view('inventory.stocks.index', compact('stocks', 'warehouses', 'warehouse_id', 'search')); 
+    }
+
+    public function export(Request $request)
+    {
+        $warehouse_id = $request->input('warehouse_id');
+        $search = $request->input('search');
+        
+        $stocks = Stock::with(['product.unit', 'warehouse'])
+            ->when($warehouse_id, function($query) use ($warehouse_id) {
+                return $query->where('warehouse_id', $warehouse_id);
+            })
+            ->when($search, function($query) use ($search) {
+                return $query->whereHas('product', function($q) use ($search) {
+                    $q->where('product_name', 'like', "%{$search}%")
+                      ->orWhere('product_code', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->get();
+
+        $warehouseName = 'All';
+        if ($warehouse_id) {
+            $warehouse = Warehouse::find($warehouse_id);
+            if ($warehouse) $warehouseName = $warehouse->warehouse_name;
+        }
+
+        activity('export')
+            ->performedOn(new Stock())
+            ->causedBy(auth()->user())
+            ->log("Export Inventory Stock\nWarehouse : {$warehouseName}\nSearch Filter : " . ($search ?: 'None') . "\nRows Exported : " . $stocks->count() . "\nSource : Excel");
+
+        $fileName = 'Inventory_Stock_' . Carbon::now()->format('Y-m-d_H-i') . '.xlsx';
+
+        return Excel::download(new InventoryStockExport($stocks), $fileName);
     }
 }

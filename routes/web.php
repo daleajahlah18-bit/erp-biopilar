@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
     // Inventory
     Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::middleware('permission:product_stock.visible')->group(function () {
+            Route::get('stocks/export', [App\Http\Controllers\Inventory\StockController::class, 'export'])->name('stocks.export');
             Route::get('stocks', [App\Http\Controllers\Inventory\StockController::class, 'index'])->name('stocks.index');
         });
         

@@ -22,6 +22,9 @@
                     <div class="d-flex gap-2">
                         <input type="text" name="search" class="form-control" placeholder="Kode / Nama Produk" value="{{ $search ?? '' }}">
                         <button class="btn-primary-custom" type="submit" style="white-space: nowrap;"><i class="bi bi-search"></i> Cari</button>
+                        <a href="{{ route('inventory.stocks.export', request()->query()) }}" class="btn btn-success" style="white-space: nowrap;" title="Export Excel">
+                            <i class="bi bi-file-excel"></i> Export Excel
+                        </a>
                     </div>
                 </div>
             </div>
