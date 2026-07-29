@@ -56,7 +56,11 @@ class ReportPhase extends Model
         'company_sign_position_3',
         'company_sign_name_4',
         'company_sign_position_4',
-        'created_by'
+        'created_by',
+        'opening_paragraph',
+        'progress_paragraph',
+        'closing_paragraph',
+        'additional_notes'
     ];
 
     protected $casts = [

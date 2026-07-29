@@ -150,7 +150,7 @@
     <div class="report-number">No : {{ $reportPhase->report_number }}</div>
 
     <div class="content-text">
-        Pada hari ini, <strong>{{ \Carbon\Carbon::parse($reportPhase->document_date)->locale('id')->isoFormat('dddd') }}</strong> tanggal <strong>{{ \Carbon\Carbon::parse($reportPhase->document_date)->locale('id')->isoFormat('D MMMM Y') }}</strong> telah diadakan pemeriksaan bersama atas pekerjaan:
+        {!! $reportPhase->opening_paragraph !!}
     </div>
 
     <table class="info-table">
@@ -223,16 +223,18 @@
     </div>
 
     <div class="content-text" style="margin-top: 20px;">
-        Dengan ini secara bersama-sama menyatakan bahwa pekerjaan telah mencapai progress {{ $reportPhase->progress_percentage }}% sesuai dengan jangka waktu pelaksanaan pekerjaan yang tertuang dalam Surat Perjanjian Pemborongan Pekerjaan; Pasal 3.<br><br>
-        @if($reportPhase->progress_percentage == 100)
-        Pekerjaan telah selesai dengan hasil baik tanpa kurang apapun sesuai dengan PO yang telah diterbitkan oleh {{ $reportPhase->project->client_name }}.<br>
-        @endif
-        Berikut hitungan progress pekerjaan terlampir.
+        {!! $reportPhase->progress_paragraph !!}
     </div>
 
     <div class="content-text" style="margin-top: 20px;">
-        Demikian Berita Acara Progress Pekerjaan ini kami buat dengan sebenarnya agar dapat digunakan sebagaimana mestinya.
+        {!! $reportPhase->closing_paragraph !!}
     </div>
+
+    @if(!empty($reportPhase->additional_notes))
+    <div class="content-text" style="margin-top: 20px;">
+        {!! $reportPhase->additional_notes !!}
+    </div>
+    @endif
 
     <div style="margin-top: 20px;">
         Tangerang, {{ \Carbon\Carbon::parse($reportPhase->document_date)->locale('id')->isoFormat('D MMMM Y') }}

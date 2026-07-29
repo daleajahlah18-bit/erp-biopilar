@@ -2,6 +2,14 @@
 @section('title', 'Create Report Phase')
 @section('page_title', 'Create Report Phase (BAPP)')
 
+@push('styles')
+<link href="{{ asset('vendor/summernote/summernote-lite.min.css') }}" rel="stylesheet">
+<style>
+    .note-editor .dropdown-toggle::after { all: unset; }
+    .note-editor .dropdown-menu { min-width: 200px; }
+</style>
+@endpush
+
 @section('header_actions')
     <a href="{{ route('report-phases.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Kembali</a>
 @endsection
@@ -79,6 +87,35 @@
 
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Narrative & Notes</h6>
+                    <small class="text-muted">Gunakan placeholder untuk data dinamis.</small>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-4">
+                        <label class="form-label">Opening Paragraph</label>
+                        <textarea name="opening_paragraph" class="form-control summernote">Pada hari ini, &#123;&#123; report_date &#125;&#125; telah diadakan pemeriksaan bersama atas pekerjaan:</textarea>
+                        @include('project_report.report_phases.partials._placeholders')
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Progress Paragraph</label>
+                        <textarea name="progress_paragraph" class="form-control summernote">Dengan ini secara bersama-sama menyatakan bahwa pekerjaan telah mencapai progress &#123;&#123; progress_percentage &#125;&#125;% dengan baik sesuai dengan PO yang telah diterbitkan oleh &#123;&#123; client_name &#125;&#125;. Hitungan progress pekerjaan terlampir.</textarea>
+                        @include('project_report.report_phases.partials._placeholders')
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label">Closing Paragraph</label>
+                        <textarea name="closing_paragraph" class="form-control summernote">Demikian Berita Acara Progress Pekerjaan ini kami buat dengan sebenarnya agar dapat digunakan sebagaimana mestinya.</textarea>
+                        @include('project_report.report_phases.partials._placeholders')
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Additional Notes (Optional)</label>
+                        <textarea name="additional_notes" class="form-control summernote"></textarea>
+                        @include('project_report.report_phases.partials._placeholders')
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Signatures</h6>
                     <small class="text-muted">Isi nama dan jabatan untuk ditandatangani di BAPP.</small>
                 </div>
@@ -130,6 +167,7 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('vendor/summernote/summernote-lite.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const projectSelect = document.getElementById('project_id');
@@ -186,6 +224,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.display = 'none';
             }
         }
+    });
+
+    $('.summernote').summernote({
+        height: 150,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+
+    $('.insert-placeholder').click(function(e) {
+        e.preventDefault();
+        var placeholder = $(this).text();
+        var editor = $(this).closest('.form-group').find('.summernote');
+        editor.summernote('editor.insertText', placeholder);
     });
 });
 </script>

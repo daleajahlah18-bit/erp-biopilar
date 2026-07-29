@@ -72,6 +72,10 @@ class ReportPhaseController extends Controller
                 'company_sign_position_3' => $request->company_sign_position_3,
                 'company_sign_name_4' => $request->company_sign_name_4,
                 'company_sign_position_4' => $request->company_sign_position_4,
+                'opening_paragraph' => $request->opening_paragraph,
+                'progress_paragraph' => $request->progress_paragraph,
+                'closing_paragraph' => $request->closing_paragraph,
+                'additional_notes' => $request->additional_notes,
                 'created_by' => auth()->id()
             ]);
 
@@ -79,6 +83,13 @@ class ReportPhaseController extends Controller
                 ->performedOn($reportPhase)
                 ->causedBy(auth()->user())
                 ->log("Created Report Phase:\n{$reportNumber}");
+
+            if ($request->hasAny(['opening_paragraph', 'progress_paragraph', 'closing_paragraph', 'additional_notes'])) {
+                activity()
+                    ->performedOn($reportPhase)
+                    ->causedBy(auth()->user())
+                    ->log("Created Report Phase Narrative:\n{$reportNumber}");
+            }
 
             DB::commit();
             return redirect()->route('report-phases.index')->with('success', 'Report Phase berhasil dibuat.');
@@ -130,18 +141,29 @@ class ReportPhaseController extends Controller
                 'company_sign_position_3' => $request->company_sign_position_3,
                 'company_sign_name_4' => $request->company_sign_name_4,
                 'company_sign_position_4' => $request->company_sign_position_4,
+                'opening_paragraph' => $request->opening_paragraph,
+                'progress_paragraph' => $request->progress_paragraph,
+                'closing_paragraph' => $request->closing_paragraph,
+                'additional_notes' => $request->additional_notes,
             ]);
 
             if ($oldProgress != $newProgress) {
                 activity()
                     ->performedOn($reportPhase)
                     ->causedBy(auth()->user())
-                    ->log("Updated Progress:\n{$reportPhase->report_number}\nProgress changed from {$oldProgress}% to {$newProgress}%");
+                    ->log("Updated Report Phase:\n{$reportPhase->report_number}\nProgress: {$oldProgress}% -> {$newProgress}%");
             } else {
                 activity()
                     ->performedOn($reportPhase)
                     ->causedBy(auth()->user())
                     ->log("Updated Report Phase: {$reportPhase->report_number}");
+            }
+
+            if ($request->hasAny(['opening_paragraph', 'progress_paragraph', 'closing_paragraph', 'additional_notes'])) {
+                activity()
+                    ->performedOn($reportPhase)
+                    ->causedBy(auth()->user())
+                    ->log("Updated Report Phase Narrative:\n{$reportPhase->report_number}");
             }
 
             DB::commit();
@@ -170,10 +192,44 @@ class ReportPhaseController extends Controller
             ->performedOn($reportPhase)
             ->causedBy(auth()->user())
             ->log("Exported PDF:\n{$reportPhase->report_number}");
+            
+        activity()
+            ->performedOn($reportPhase)
+            ->causedBy(auth()->user())
+            ->log("Generated Report Phase PDF:\n{$reportPhase->report_number}");
+
+        $project = $reportPhase->project;
+
+        $defaultOpening = "Pada hari ini, {{ report_date }} telah diadakan pemeriksaan bersama atas pekerjaan:";
+        $defaultProgress = "Dengan ini secara bersama-sama menyatakan bahwa pekerjaan telah mencapai progress {{ progress_percentage }}% dengan baik sesuai dengan PO yang telah diterbitkan oleh {{ client_name }}. Hitungan progress pekerjaan terlampir.";
+        $defaultClosing = "Demikian Berita Acara Progress Pekerjaan ini kami buat dengan sebenarnya agar dapat digunakan sebagaimana mestinya.";
+
+        $reportPhase->opening_paragraph = $this->replacePlaceholders($reportPhase->opening_paragraph ?? $defaultOpening, $reportPhase, $project);
+        $reportPhase->progress_paragraph = $this->replacePlaceholders($reportPhase->progress_paragraph ?? $defaultProgress, $reportPhase, $project);
+        $reportPhase->closing_paragraph = $this->replacePlaceholders($reportPhase->closing_paragraph ?? $defaultClosing, $reportPhase, $project);
+        $reportPhase->additional_notes = $reportPhase->additional_notes ? $this->replacePlaceholders($reportPhase->additional_notes, $reportPhase, $project) : null;
 
         $pdf = PDF::loadView('project_report.report_phases.pdf', compact('reportPhase'));
         $pdf->setPaper('A4', 'portrait');
         return $pdf->stream(str_replace('/', '_', $reportPhase->report_number) . '.pdf');
+    }
+
+    private function replacePlaceholders($text, $reportPhase, $project)
+    {
+        if (!$text) return $text;
+
+        $replacements = [
+            '{{ report_date }}' => $reportPhase->document_date ? \Carbon\Carbon::parse($reportPhase->document_date)->locale('id')->isoFormat('D MMMM Y') : '-',
+            '{{ project_name }}' => $project->project_name ?? '-',
+            '{{ client_name }}' => $project->client_name ?? '-',
+            '{{ progress_percentage }}' => $reportPhase->progress_percentage ?? '-',
+            '{{ project_address }}' => $project->project_address ?? '-',
+            '{{ field_of_work }}' => $project->field_of_work ?? '-',
+            '{{ project_start_date }}' => $project->project_start_date ? \Carbon\Carbon::parse($project->project_start_date)->locale('id')->isoFormat('D MMMM Y') : '-',
+            '{{ project_end_date }}' => $project->project_end_date ? \Carbon\Carbon::parse($project->project_end_date)->locale('id')->isoFormat('D MMMM Y') : '-',
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $text);
     }
 
     private function generateReportNumber()
