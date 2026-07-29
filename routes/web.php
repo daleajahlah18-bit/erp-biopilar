@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('suppliers', App\Http\Controllers\Master\SupplierController::class)->middleware('permission:suppliers.visible');
         Route::resource('units', App\Http\Controllers\Master\UnitController::class)->middleware('permission:units.visible');
         Route::resource('customers', App\Http\Controllers\Master\CustomerController::class)->middleware('permission:customers.visible');
+        Route::get('projects/{project}/pdf', [App\Http\Controllers\Master\ProjectController::class, 'pdf'])->name('projects.pdf')->middleware('permission:projects.visible');
         Route::resource('projects', App\Http\Controllers\Master\ProjectController::class)->middleware('permission:projects.visible');
         Route::resource('warehouses', App\Http\Controllers\Master\WarehouseController::class)->middleware('permission:warehouses.visible');
     });

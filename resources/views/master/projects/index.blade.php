@@ -60,6 +60,7 @@
                         </td>
                         <td>{{ $project->person_in_charge }}</td>
                         <td class="text-end">
+                            <a href="{{ route('master.projects.pdf', $project) }}" class="btn btn-sm btn-outline-danger me-1" target="_blank" title="Print PDF"><i class="bi bi-file-earmark-pdf"></i></a>
                             <a href="{{ route('master.projects.show', $project) }}" class="btn btn-sm btn-outline-info me-1"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('master.projects.edit', $project) }}" class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-pencil"></i></a>
                             <form action="{{ route('master.projects.destroy', $project) }}" method="POST" class="d-inline">
