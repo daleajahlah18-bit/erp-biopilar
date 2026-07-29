@@ -179,11 +179,6 @@
                         Log in
                     </button>
                     
-                    @if (Route::has('register'))
-                    <div class="text-center">
-                        <p class="text-muted small">Don't have an account? <a href="{{ route('register') }}" class="text-custom text-decoration-none fw-bold">Sign up</a></p>
-                    </div>
-                    @endif
                 </form>
             </div>
         </div>
