@@ -11,12 +11,3 @@ try {
 } catch (\Exception $e) {
     echo "Failed to drop: " . $e->getMessage() . "\n";
 }
-
-try {
-    DB::table('migrations')->where('migration', 'like', '%activity_log%')->delete();
-    echo "Removed migrations from table.\n";
-} catch (\Exception $e) {
-    echo "Failed to remove migrations: " . $e->getMessage() . "\n";
-}
-
-echo "Done.\n";

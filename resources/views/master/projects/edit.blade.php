@@ -159,6 +159,7 @@
                                         <select name="payment_terms[{{ $index }}][top_type]" class="form-select top-select" data-selected="{{ $term->top_type }}" required>
                                             <option value="">-- Pilih TOP --</option>
                                             <option value="Down Payment" {{ $term->top_type == 'Down Payment' ? 'selected' : '' }}>Down Payment</option>
+                                            <option value="After Progress 25%" {{ $term->top_type == 'After Progress 25%' ? 'selected' : '' }}>After Progress 25%</option>
                                             <option value="After Progress 50%" {{ $term->top_type == 'After Progress 50%' ? 'selected' : '' }}>After Progress 50%</option>
                                             <option value="After Progress 60%" {{ $term->top_type == 'After Progress 60%' ? 'selected' : '' }}>After Progress 60%</option>
                                             <option value="After Progress 100%" {{ $term->top_type == 'After Progress 100%' ? 'selected' : '' }}>After Progress 100%</option>
@@ -248,6 +249,7 @@
 <div id="topOptions" style="display:none;">
     <option value="">-- Pilih TOP --</option>
     <option value="Down Payment">Down Payment</option>
+    <option value="After Progress 25%">After Progress 25%</option>
     <option value="After Progress 50%">After Progress 50%</option>
     <option value="After Progress 60%">After Progress 60%</option>
     <option value="After Progress 100%">After Progress 100%</option>

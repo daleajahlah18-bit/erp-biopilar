@@ -33,12 +33,13 @@ class SalesReceivableController extends Controller
         $topOrder = [
             'Down Payment' => 1,
             'Material On Site' => 2,
-            'After Progress 50%' => 3,
-            'After Progress 60%' => 4,
-            'After Installation' => 5,
-            'Monthly Progress' => 6,
-            'After Progress 100%' => 7,
-            'Retention' => 8
+            'After Progress 25%' => 3,
+            'After Progress 50%' => 4,
+            'After Progress 60%' => 5,
+            'After Installation' => 6,
+            'Monthly Progress' => 7,
+            'After Progress 100%' => 8,
+            'Retention' => 9
         ];
 
         foreach ($allTerms as $term) {

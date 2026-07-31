@@ -61,10 +61,14 @@ class DashboardController extends Controller
             ->toArray();
 
         // 3. Recent Activities
-        $recentActivities = ActivityLog::with('causer')
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+        try {
+            $recentActivities = ActivityLog::with('causer')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+        } catch (\Exception $e) {
+            $recentActivities = collect();
+        }
 
         return view('dashboard', compact(
             'totalSalesThisMonth',

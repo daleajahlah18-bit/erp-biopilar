@@ -171,6 +171,7 @@
 <div id="topOptions" style="display:none;">
     <option value="">-- Pilih TOP --</option>
     <option value="Down Payment">Down Payment</option>
+    <option value="After Progress 25%">After Progress 25%</option>
     <option value="After Progress 50%">After Progress 50%</option>
     <option value="After Progress 60%">After Progress 60%</option>
     <option value="After Progress 100%">After Progress 100%</option>
