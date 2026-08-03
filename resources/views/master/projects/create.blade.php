@@ -94,12 +94,17 @@
                     </div>
                     
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">PR Number</label>
                             <input type="text" name="client_po_number" class="form-control @error('client_po_number') is-invalid @enderror" value="{{ old('client_po_number') }}">
                             @error('client_po_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label class="form-label">Work Package</label>
+                            <input type="text" name="work_package" class="form-control @error('work_package') is-invalid @enderror" value="{{ old('work_package') }}">
+                            @error('work_package') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label">Client / User Name</label>
                             <input type="text" name="client_user_name" class="form-control @error('client_user_name') is-invalid @enderror" value="{{ old('client_user_name') }}">
                             @error('client_user_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
