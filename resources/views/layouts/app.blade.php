@@ -946,6 +946,85 @@
         });
     </script>
 
+    <!-- Global Notification Handlers -->
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                notifySuccess('Berhasil!', '{!! addslashes(session('success')) !!}');
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                notifyError('Terjadi Kesalahan', '{!! addslashes(session('error')) !!}');
+            });
+        </script>
+    @endif
+
+    @if (session('warning'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({icon: 'warning', title: 'Perhatian', text: '{!! addslashes(session('warning')) !!}'});
+            });
+        </script>
+    @endif
+
+    @if (session('info'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({icon: 'info', title: 'Informasi', text: '{!! addslashes(session('info')) !!}'});
+            });
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let errorMessages = '';
+                @foreach ($errors->all() as $error)
+                    errorMessages += '• {!! addslashes($error) !!}\n';
+                @endforeach
+                notifyError('Validasi Gagal', errorMessages);
+            });
+        </script>
+    @endif
+
+    <!-- Global Submit Button State Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('submit', function(e) {
+                if(e.target && e.target.tagName === 'FORM' && !e.target.classList.contains('no-loading')) {
+                    let btn = e.target.querySelector('button[type="submit"]');
+                    if(btn && !btn.disabled) {
+                        btn.dataset.originalText = btn.innerHTML;
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+                        
+                        // Restore button after a short delay if it's a download target
+                        setTimeout(() => {
+                            if(btn && (e.target.target === '_blank' || e.target.classList.contains('download-form'))) {
+                                btn.innerHTML = btn.dataset.originalText;
+                                btn.disabled = false;
+                            }
+                        }, 2000);
+                    }
+                }
+            });
+
+            // Restore state when user navigates back via browser history
+            window.addEventListener('pageshow', function(event) {
+                document.querySelectorAll('button[type="submit"]').forEach(btn => {
+                    if(btn.dataset.originalText) {
+                        btn.innerHTML = btn.dataset.originalText;
+                        btn.disabled = false;
+                    }
+                });
+            });
+        });
+    </script>
+
     @stack('scripts')
 </body>
 </html>

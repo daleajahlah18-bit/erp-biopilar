@@ -40,6 +40,10 @@ class ProjectController extends Controller
             $data = $request->validated();
             
             if ($request->hasFile('client_logo')) {
+                if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('client_logos')) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('client_logos');
+                }
+                
                 $file = $request->file('client_logo');
                 $filename = \Illuminate\Support\Str::uuid() . '.' . $file->extension();
                 \Intervention\Image\ImageManagerStatic::make($file)->encode($file->extension(), 90)->save(storage_path('app/public/client_logos/' . $filename));
@@ -86,6 +90,11 @@ class ProjectController extends Controller
                 if ($project->client_logo) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($project->client_logo);
                 }
+                
+                if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('client_logos')) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('client_logos');
+                }
+                
                 $file = $request->file('client_logo');
                 $filename = \Illuminate\Support\Str::uuid() . '.' . $file->extension();
                 \Intervention\Image\ImageManagerStatic::make($file)->encode($file->extension(), 90)->save(storage_path('app/public/client_logos/' . $filename));
