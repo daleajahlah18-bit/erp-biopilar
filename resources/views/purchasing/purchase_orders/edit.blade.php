@@ -102,12 +102,33 @@
 <template id="rowTemplate">
     <tr>
         <td>
-            <select name="items[{idx}][product_id]" class="form-select product-select" required>
-                <option value="">-- Pilih --</option>
-                @foreach($products as $product)
-                    <option value="{{ $product->id }}">{{ $product->product_code }} - {{ $product->product_name }}</option>
-                @endforeach
-            </select>
+            <div class="product-selection">
+                <select name="items[{idx}][product_id]" class="form-select product-select" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="new_product" class="fw-bold text-success">+ Create New Product</option>
+                    @foreach($products as $product)
+                        <option value="{{ $product->id }}">{{ $product->product_code }} - {{ $product->product_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="new-product-fields mt-2" style="display: none;">
+                <input type="hidden" name="items[{idx}][is_new_product]" value="0" class="input-is-new">
+                <input type="text" name="items[{idx}][product_code]" class="form-control mb-1 input-code" placeholder="Product Code">
+                <input type="text" name="items[{idx}][product_name]" class="form-control mb-1 input-name" placeholder="Product Name">
+                <select name="items[{idx}][product_type]" class="form-select mb-1 input-type">
+                    <option value="">-- Type --</option>
+                    <option value="Bahan Baku">Bahan Baku</option>
+                    <option value="Bahan Jadi">Bahan Jadi</option>
+                    <option value="Bill of Material">Bill of Material</option>
+                </select>
+                <select name="items[{idx}][engineering_category]" class="form-select input-category">
+                    <option value="">-- Category --</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Electrical">Electrical</option>
+                </select>
+                <button type="button" class="btn btn-sm btn-outline-secondary mt-1 btn-cancel-new">Batal Create</button>
+            </div>
         </td>
         <td>
             <select name="items[{idx}][unit_id]" class="form-select unit-select" required>
@@ -220,6 +241,40 @@ document.addEventListener('DOMContentLoaded', function() {
             unitSelect.select2('destroy');
             tr.remove();
             calculateTotal();
+        });
+
+        // Handle new product toggle
+        productSelect.on('change', function() {
+            if (this.value === 'new_product') {
+                $(this).next('.select2-container').hide(); // Hide select2
+                tr.querySelector('.new-product-fields').style.display = 'block';
+                tr.querySelector('.input-is-new').value = '1';
+                tr.querySelector('.product-select').removeAttribute('required');
+                tr.querySelector('.product-select').disabled = true;
+                
+                tr.querySelector('.input-code').setAttribute('required', 'required');
+                tr.querySelector('.input-name').setAttribute('required', 'required');
+                tr.querySelector('.input-type').setAttribute('required', 'required');
+                tr.querySelector('.input-category').setAttribute('required', 'required');
+            }
+        });
+
+        tr.querySelector('.btn-cancel-new').addEventListener('click', function() {
+            tr.querySelector('.new-product-fields').style.display = 'none';
+            productSelect.val('').trigger('change.select2'); // Reset value without triggering full change
+            productSelect.next('.select2-container').show();
+            tr.querySelector('.input-is-new').value = '0';
+            tr.querySelector('.product-select').setAttribute('required', 'required');
+            tr.querySelector('.product-select').disabled = false;
+            
+            tr.querySelector('.input-code').removeAttribute('required');
+            tr.querySelector('.input-code').value = '';
+            tr.querySelector('.input-name').removeAttribute('required');
+            tr.querySelector('.input-name').value = '';
+            tr.querySelector('.input-type').removeAttribute('required');
+            tr.querySelector('.input-type').value = '';
+            tr.querySelector('.input-category').removeAttribute('required');
+            tr.querySelector('.input-category').value = '';
         });
 
         if (data) {

@@ -40,7 +40,12 @@ class PurchaseOrderController extends Controller
             'project_id' => 'nullable|exists:projects,id',
             'project_note' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.is_new_product' => 'nullable|boolean',
+            'items.*.product_id' => 'exclude_if:items.*.is_new_product,1|required|exists:products,id',
+            'items.*.product_code' => 'required_if:items.*.is_new_product,1|nullable|distinct|unique:products,product_code',
+            'items.*.product_name' => 'required_if:items.*.is_new_product,1|nullable',
+            'items.*.product_type' => 'required_if:items.*.is_new_product,1|nullable|in:Bahan Baku,Bahan Jadi,Bill of Material',
+            'items.*.engineering_category' => 'required_if:items.*.is_new_product,1|nullable|in:Civil,Mechanical,Electrical',
             'items.*.unit_id' => 'required|exists:units,id',
             'items.*.qty' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0.01',
@@ -53,10 +58,24 @@ class PurchaseOrderController extends Controller
             $itemsData = [];
 
             foreach ($request->items as $item) {
+                if (!empty($item['is_new_product'])) {
+                    $product = Product::create([
+                        'product_code' => $item['product_code'],
+                        'product_name' => $item['product_name'],
+                        'product_type' => $item['product_type'],
+                        'engineering_category' => $item['engineering_category'],
+                        'unit_id' => $item['unit_id'],
+                        'created_by' => auth()->id(),
+                    ]);
+                    $productId = $product->id;
+                } else {
+                    $productId = $item['product_id'];
+                }
+
                 $subtotal = $item['qty'] * $item['price'];
                 $totalAmount += $subtotal;
                 $itemsData[] = [
-                    'product_id' => $item['product_id'],
+                    'product_id' => $productId,
                     'unit_id' => $item['unit_id'],
                     'quantity' => $item['qty'],
                     'unit_price' => $item['price'],
@@ -138,7 +157,12 @@ class PurchaseOrderController extends Controller
             'project_id' => 'nullable|exists:projects,id',
             'project_note' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.is_new_product' => 'nullable|boolean',
+            'items.*.product_id' => 'exclude_if:items.*.is_new_product,1|required|exists:products,id',
+            'items.*.product_code' => 'required_if:items.*.is_new_product,1|nullable|distinct|unique:products,product_code',
+            'items.*.product_name' => 'required_if:items.*.is_new_product,1|nullable',
+            'items.*.product_type' => 'required_if:items.*.is_new_product,1|nullable|in:Bahan Baku,Bahan Jadi,Bill of Material',
+            'items.*.engineering_category' => 'required_if:items.*.is_new_product,1|nullable|in:Civil,Mechanical,Electrical',
             'items.*.unit_id' => 'required|exists:units,id',
             'items.*.qty' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0.01',
@@ -151,10 +175,24 @@ class PurchaseOrderController extends Controller
             $itemsData = [];
 
             foreach ($request->items as $item) {
+                if (!empty($item['is_new_product'])) {
+                    $product = Product::create([
+                        'product_code' => $item['product_code'],
+                        'product_name' => $item['product_name'],
+                        'product_type' => $item['product_type'],
+                        'engineering_category' => $item['engineering_category'],
+                        'unit_id' => $item['unit_id'],
+                        'created_by' => auth()->id(),
+                    ]);
+                    $productId = $product->id;
+                } else {
+                    $productId = $item['product_id'];
+                }
+
                 $subtotal = $item['qty'] * $item['price'];
                 $totalAmount += $subtotal;
                 $itemsData[] = [
-                    'product_id' => $item['product_id'],
+                    'product_id' => $productId,
                     'unit_id' => $item['unit_id'],
                     'quantity' => $item['qty'],
                     'unit_price' => $item['price'],

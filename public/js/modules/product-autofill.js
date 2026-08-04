@@ -28,7 +28,7 @@ class ProductAutoFill {
     async handleProductChange(selectElement) {
         const productId = selectElement.value;
         const row = selectElement.closest('tr') || selectElement.closest('.form-row');
-        if (!row || !productId) return;
+        if (!row || !productId || productId === 'new_product') return;
 
         const unitSelect = row.querySelector('.unit-select');
         const priceInput = row.querySelector('.input-price');
