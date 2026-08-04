@@ -67,6 +67,12 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Lokasi Dokumen</label>
+                            <input type="text" name="document_location" class="form-control @error('document_location') is-invalid @enderror" value="{{ old('document_location', $reportPhase->document_location) }}" placeholder="Contoh: Tangerang">
+                            <small class="text-muted">Lokasi yang akan ditampilkan pada bagian tanggal dokumen PDF.</small>
+                            @error('document_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Document Date <span class="text-danger">*</span></label>
                             <input type="date" name="document_date" class="form-control @error('document_date') is-invalid @enderror" value="{{ old('document_date', $reportPhase->document_date ? $reportPhase->document_date->format('Y-m-d') : '') }}" required>

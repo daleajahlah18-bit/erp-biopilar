@@ -237,7 +237,10 @@
     @endif
 
     <div style="margin-top: 20px;">
-        Tangerang, {{ \Carbon\Carbon::parse($reportPhase->document_date)->locale('id')->isoFormat('D MMMM Y') }}
+        @if($reportPhase->document_location)
+            {{ $reportPhase->document_location }},
+        @endif
+        {{ \Carbon\Carbon::parse($reportPhase->document_date)->locale('id')->isoFormat('D MMMM Y') }}
     </div>
 
     <table class="signature-table">

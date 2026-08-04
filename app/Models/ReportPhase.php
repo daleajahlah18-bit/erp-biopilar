@@ -39,6 +39,7 @@ class ReportPhase extends Model
         'project_id',
         'report_number',
         'document_date',
+        'document_location',
         'progress_percentage',
         'client_sign_name_1',
         'client_sign_position_1',

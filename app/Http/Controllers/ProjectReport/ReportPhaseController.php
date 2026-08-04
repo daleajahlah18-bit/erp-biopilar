@@ -38,6 +38,7 @@ class ReportPhaseController extends Controller
         $request->validate([
             'project_id' => 'required|exists:projects,id',
             'document_date' => 'required|date',
+            'document_location' => 'nullable|string|max:255',
             'progress_percentage' => 'required|numeric|min:0|max:100',
         ]);
 
@@ -55,6 +56,7 @@ class ReportPhaseController extends Controller
                 'project_id' => $project->id,
                 'report_number' => $reportNumber,
                 'document_date' => $request->document_date,
+                'document_location' => $request->document_location,
                 'progress_percentage' => $request->progress_percentage,
                 'client_sign_name_1' => $request->client_sign_name_1,
                 'client_sign_position_1' => $request->client_sign_position_1,
@@ -109,6 +111,7 @@ class ReportPhaseController extends Controller
     {
         $request->validate([
             'document_date' => 'required|date',
+            'document_location' => 'nullable|string|max:255',
             'progress_percentage' => 'required|numeric|min:0|max:100',
         ]);
 
@@ -124,6 +127,7 @@ class ReportPhaseController extends Controller
 
             $reportPhase->update([
                 'document_date' => $request->document_date,
+                'document_location' => $request->document_location,
                 'progress_percentage' => $request->progress_percentage,
                 'client_sign_name_1' => $request->client_sign_name_1,
                 'client_sign_position_1' => $request->client_sign_position_1,
