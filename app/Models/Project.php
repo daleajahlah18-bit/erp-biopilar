@@ -103,4 +103,9 @@ class Project extends Model
         return $this->hasMany(ReportPhase::class);
     }
 
+    public function rabs()
+    {
+        return $this->hasMany(Rab::class);
+    }
+
 }

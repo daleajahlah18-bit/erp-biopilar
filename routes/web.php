@@ -175,6 +175,15 @@ Route::middleware('auth')->group(function () {
         Route::resource('survey-reports', App\Http\Controllers\ProjectReport\SurveyReportController::class);
     });
 
+    // RABs
+    Route::middleware('permission:rab.visible')->group(function () {
+        Route::get('rabs/excel/template', [App\Http\Controllers\ProjectReport\RabExcelController::class, 'downloadTemplate'])->name('rabs.excel.template');
+        Route::post('rabs/excel/preview', [App\Http\Controllers\ProjectReport\RabExcelController::class, 'previewImport'])->name('rabs.excel.preview');
+        Route::post('rabs/excel/import', [App\Http\Controllers\ProjectReport\RabExcelController::class, 'import'])->name('rabs.excel.import');
+        Route::get('rabs/{rab}/export', [App\Http\Controllers\ProjectReport\RabExcelController::class, 'export'])->name('rabs.export');
+        Route::resource('rabs', App\Http\Controllers\ProjectReport\RabController::class);
+    });
+
     // Project Documents
     Route::prefix('project-documents')->name('project-documents.')->middleware('permission:project_report.visible')->group(function () {
         Route::get('/', [App\Http\Controllers\Reports\ProjectDocumentController::class, 'index'])->name('index');

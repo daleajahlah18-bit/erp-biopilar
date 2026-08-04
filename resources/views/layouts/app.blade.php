@@ -602,8 +602,8 @@
             @endif
 
             {{-- PROJECT REPORT --}}
-            @canany(['project_report.visible', 'daily_report.visible', 'report_phase.visible', 'survey_report.visible'])
-            @php $isActive = request()->is('project-reports*') || request()->is('daily-reports*') || request()->is('report-phases*') || request()->is('survey-reports*'); @endphp
+            @canany(['project_report.visible', 'daily_report.visible', 'report_phase.visible', 'survey_report.visible', 'rab.visible'])
+            @php $isActive = request()->is('project-reports*') || request()->is('daily-reports*') || request()->is('report-phases*') || request()->is('survey-reports*') || request()->is('rabs*'); @endphp
             <div class="nav-item">
                 <a class="nav-link {{ $isActive ? 'active-parent' : 'collapsed' }}" href="#submenuProjectReport" data-bs-toggle="collapse" role="button" aria-expanded="{{ $isActive ? 'true' : 'false' }}">
                     <i class="bi bi-bar-chart-line"></i>
@@ -623,6 +623,9 @@
                         @endcan
                         @can('survey_report.visible')
                         <li><a href="{{ route('survey-reports.index') }}" class="sub-item {{ request()->is('survey-reports*') ? 'active' : '' }}">Survey Report</a></li>
+                        @endcan
+                        @can('rab.visible')
+                        <li><a href="{{ route('rabs.index') }}" class="sub-item {{ request()->is('rabs*') ? 'active' : '' }}">RAB (Anggaran)</a></li>
                         @endcan
                     </ul>
                 </div>
