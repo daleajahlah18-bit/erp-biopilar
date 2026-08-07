@@ -44,6 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return amount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    // Safe ID Comparator (Number vs String)
+    function sameNodeId(idA, idB) {
+        return String(idA ?? '') === String(idB ?? '');
+    }
+
     // Convert number to A, B... Z, AA, AB...
     function getColumnName(num) {
         for (var ret = '', a = 1, b = 26; (num -= a) >= 0; a = b, b *= 26) {
@@ -288,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (title && title.trim()) {
-            const section = treeData.find(s => s.id === sectionId);
+            const section = treeData.find(s => sameNodeId(s.id, sectionId));
             if (section) {
                 section.children.push({
                     id: 'node_grp_' + nextNodeId++,
@@ -324,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateNodeTitle(nodes, id, newTitle) {
         for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].id === id) {
+            if (sameNodeId(nodes[i].id, id)) {
                 nodes[i].title = newTitle;
                 return true;
             }
@@ -355,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function removeNodeById(nodes, id) {
         return nodes.filter(node => {
-            if (node.id === id) return false;
+            if (sameNodeId(node.id, id)) return false;
             if (node.children) {
                 node.children = removeNodeById(node.children, id);
             }
@@ -412,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const groupId = itemParentIdInput.value;
             for (let s = 0; s < treeData.length; s++) {
                 for (let g = 0; g < treeData[s].children.length; g++) {
-                    if (treeData[s].children[g].id === groupId) {
+                    if (sameNodeId(treeData[s].children[g].id, groupId)) {
                         treeData[s].children[g].children.push(itemData);
                         break;
                     }
@@ -426,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateExistingItemNode(nodes, itemData) {
         for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].id === itemData.id) {
+            if (sameNodeId(nodes[i].id, itemData.id)) {
                 // Do not override node.type if it's Group!
                 // itemData.type might be 'Item' by default if we didn't handle it perfectly,
                 // but we explicitly preserve the node's type.
@@ -495,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function findNodeById(nodes, id) {
         for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].id === id) return nodes[i];
+            if (sameNodeId(nodes[i].id, id)) return nodes[i];
             if (nodes[i].children) {
                 const found = findNodeById(nodes[i].children, id);
                 if (found) return found;

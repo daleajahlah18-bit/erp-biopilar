@@ -229,19 +229,38 @@ class RabController extends Controller
             $treeData = json_decode($request->tree_data, true);
             $grandTotal = 0;
             
+            $saveNode = function ($rabId, $parentId, $nodeType, $nodeData, $sortOrder) {
+                $nodeId = $nodeData['id'] ?? null;
+                $isNewNode = empty($nodeId) || (is_string($nodeId) && str_starts_with($nodeId, 'node_'));
+
+                $attributes = [
+                    'parent_id' => $parentId,
+                    'node_type' => $nodeType,
+                    'title' => $nodeData['title'],
+                    'specification' => $nodeData['specification'] ?? null,
+                    'qty' => floatval($nodeData['qty'] ?? 0),
+                    'unit' => $nodeData['unit'] ?? null,
+                    'unit_price' => floatval($nodeData['unit_price'] ?? 0),
+                    'sort_order' => $sortOrder
+                ];
+                
+                if (!$isNewNode) {
+                    $node = RabNode::where('id', $nodeId)->where('rab_id', $rabId)->first();
+                    if ($node) {
+                        $node->update($attributes);
+                        return $node;
+                    } else {
+                        throw new \Exception("Invalid node ID ($nodeId) or node belongs to another RAB.");
+                    }
+                }
+                
+                $attributes['rab_id'] = $rabId;
+                return RabNode::create($attributes);
+            };
+            
             $secOrder = 1;
             foreach ($treeData as $secData) {
-                $secId = strpos($secData['id'], 'node_') === 0 ? null : $secData['id'];
-                
-                $section = RabNode::updateOrCreate(
-                    ['id' => $secId, 'rab_id' => $rab->id],
-                    [
-                        'parent_id' => null,
-                        'node_type' => 'Section',
-                        'title' => $secData['title'],
-                        'sort_order' => $secOrder
-                    ]
-                );
+                $section = $saveNode($rab->id, null, 'Section', $secData, $secOrder);
                 $nodesToKeep[] = $section->id;
                 $secOrder++;
 
@@ -249,52 +268,21 @@ class RabController extends Controller
                 if (isset($secData['children'])) {
                     $grpOrder = 1;
                     foreach ($secData['children'] as $grpData) {
-                        $grpId = strpos($grpData['id'], 'node_') === 0 ? null : $grpData['id'];
-                        $groupQty = floatval($grpData['qty'] ?? 0);
-                        $groupUnitPrice = floatval($grpData['unit_price'] ?? 0);
-                        $groupOwnTotal = $groupQty * $groupUnitPrice;
-
-                        $group = RabNode::updateOrCreate(
-                            ['id' => $grpId, 'rab_id' => $rab->id],
-                            [
-                                'parent_id' => $section->id,
-                                'node_type' => 'Group',
-                                'title' => $grpData['title'],
-                                'specification' => $grpData['specification'] ?? null,
-                                'qty' => $groupQty,
-                                'unit' => $grpData['unit'] ?? null,
-                                'unit_price' => $groupUnitPrice,
-                                'sort_order' => $grpOrder
-                            ]
-                        );
+                        $group = $saveNode($rab->id, $section->id, 'Group', $grpData, $grpOrder);
                         $nodesToKeep[] = $group->id;
                         $grpOrder++;
 
-                        $groupTotal = $groupOwnTotal;
+                        $groupTotal = floatval($group->qty) * floatval($group->unit_price);
+                        
                         if (isset($grpData['children'])) {
                             $itmOrder = 1;
                             foreach ($grpData['children'] as $itmData) {
-                                $itmId = strpos($itmData['id'], 'node_') === 0 ? null : $itmData['id'];
-                                $qty = floatval($itmData['qty'] ?? 0);
-                                $unitPrice = floatval($itmData['unit_price'] ?? 0);
-                                $totalPrice = $qty * $unitPrice;
-
-                                $item = RabNode::updateOrCreate(
-                                    ['id' => $itmId, 'rab_id' => $rab->id],
-                                    [
-                                        'parent_id' => $group->id,
-                                        'node_type' => 'Item',
-                                        'title' => $itmData['title'],
-                                        'specification' => $itmData['specification'] ?? null,
-                                        'qty' => $qty,
-                                        'unit' => $itmData['unit'] ?? null,
-                                        'unit_price' => $unitPrice,
-                                        'total_price' => $totalPrice,
-                                        'sort_order' => $itmOrder
-                                    ]
-                                );
+                                $item = $saveNode($rab->id, $group->id, 'Item', $itmData, $itmOrder);
                                 $nodesToKeep[] = $item->id;
                                 $itmOrder++;
+                                
+                                $totalPrice = floatval($item->qty) * floatval($item->unit_price);
+                                $item->update(['total_price' => $totalPrice]);
                                 $groupTotal += $totalPrice;
                             }
                         }
