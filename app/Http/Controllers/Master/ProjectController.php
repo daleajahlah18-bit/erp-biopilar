@@ -21,9 +21,32 @@ class ProjectController extends Controller
         $this->projectService = $projectService;
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $projects = Project::latest()->sortable()->paginate(10);
+        $query = Project::query();
+
+        // Validate filters
+        $validStatuses = ['Draft', 'On Going', 'Completed', 'Cancelled'];
+        
+        if ($request->filled('status') && in_array($request->status, $validStatuses)) {
+            $query->where('project_status', $request->status);
+        }
+
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            if (strtotime($request->date_from) > strtotime($request->date_to)) {
+                return back()->with('error', 'Filter tanggal tidak valid: Tanggal mulai tidak boleh lebih besar dari tanggal akhir.');
+            }
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('project_start_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('project_start_date', '<=', $request->date_to);
+        }
+
+        $projects = $query->latest()->sortable()->paginate(10)->withQueryString();
         return view('master.projects.index', compact('projects'));
     }
 
