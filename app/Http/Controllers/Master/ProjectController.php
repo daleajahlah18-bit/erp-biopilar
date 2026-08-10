@@ -25,6 +25,17 @@ class ProjectController extends Controller
     {
         $query = Project::query();
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('project_name', 'like', "%{$search}%")
+                  ->orWhere('client_name', 'like', "%{$search}%")
+                  ->orWhere('client_po_number', 'like', "%{$search}%")
+                  ->orWhere('contract_number', 'like', "%{$search}%")
+                  ->orWhere('person_in_charge', 'like', "%{$search}%");
+            });
+        }
+
         // Validate filters
         $validStatuses = ['Draft', 'On Going', 'Completed', 'Cancelled'];
         

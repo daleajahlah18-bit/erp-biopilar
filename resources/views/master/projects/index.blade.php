@@ -9,14 +9,17 @@
 @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
 @if(session('error')) <div class="alert alert-danger">{{ session('error') }}</div> @endif
 
-<!-- Filter Card -->
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-white py-3">
-        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-funnel"></i> Filter Project</h6>
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-funnel"></i> Filter & Search Project</h6>
     </div>
     <div class="card-body">
         <form action="{{ route('master.projects.index') }}" method="GET" id="filterForm">
-            <div class="row g-3 align-items-end">
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-bold">Search</label>
+                    <input type="text" name="search" class="form-control" placeholder="Project name, client, PO..." value="{{ request('search') }}">
+                </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted small fw-bold">Status Project</label>
                     <select name="status" class="form-select">
@@ -35,7 +38,9 @@
                     <label class="form-label text-muted small fw-bold">Sampai Tanggal</label>
                     <input type="date" name="date_to" id="date_to" class="form-control" value="{{ request('date_to') }}">
                 </div>
-                <div class="col-md-3">
+            </div>
+            <div class="row">
+                <div class="col-12 text-end">
                     <button type="submit" class="btn btn-primary" onclick="return validateDateRange()"><i class="bi bi-search"></i> Filter</button>
                     <a href="{{ route('master.projects.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Reset</a>
                 </div>
