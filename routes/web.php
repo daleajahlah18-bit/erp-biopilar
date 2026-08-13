@@ -184,6 +184,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('rabs', App\Http\Controllers\ProjectReport\RabController::class);
     });
 
+    // S-Curves
+    Route::middleware('permission:project_report.visible')->group(function () {
+        Route::post('s-curves/{s_curve}/save-wbs', [App\Http\Controllers\ProjectReport\SCurveController::class, 'saveWbs'])->name('s-curves.save-wbs');
+        Route::post('s-curves/{s_curve}/save-plans', [App\Http\Controllers\ProjectReport\SCurveController::class, 'savePlans'])->name('s-curves.save-plans');
+        Route::post('s-curves/{s_curve}/save-actuals', [App\Http\Controllers\ProjectReport\SCurveController::class, 'saveActuals'])->name('s-curves.save-actuals');
+        Route::post('s-curves/{s_curve}/pdf', [App\Http\Controllers\ProjectReport\SCurveController::class, 'exportPdf'])->name('s-curves.pdf');
+        Route::get('s-curves/{s_curve}/excel', [App\Http\Controllers\ProjectReport\SCurveController::class, 'exportExcel'])->name('s-curves.excel');
+        Route::resource('s-curves', App\Http\Controllers\ProjectReport\SCurveController::class);
+    });
+
     // Project Documents
     Route::prefix('project-documents')->name('project-documents.')->middleware('permission:project_report.visible')->group(function () {
         Route::get('/', [App\Http\Controllers\Reports\ProjectDocumentController::class, 'index'])->name('index');
