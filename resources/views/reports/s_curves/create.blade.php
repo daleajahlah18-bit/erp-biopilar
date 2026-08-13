@@ -68,9 +68,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     if(typeof jQuery !== 'undefined' && $.fn.select2) {
         $('.select2').select2({
-            theme: 'bootstrap-5',
-            placeholder: '-- Pilih Project --',
-            allowClear: true
+            theme: 'bootstrap-5'
         });
     }
 });
