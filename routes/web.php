@@ -186,6 +186,7 @@ Route::middleware('auth')->group(function () {
 
     // S-Curves
     Route::middleware('permission:project_report.visible')->group(function () {
+        Route::get('s-curves/projects/search', [App\Http\Controllers\ProjectReport\SCurveController::class, 'searchProjects'])->name('s-curves.projects.search');
         Route::post('s-curves/{s_curve}/save-wbs', [App\Http\Controllers\ProjectReport\SCurveController::class, 'saveWbs'])->name('s-curves.save-wbs');
         Route::post('s-curves/{s_curve}/save-plans', [App\Http\Controllers\ProjectReport\SCurveController::class, 'savePlans'])->name('s-curves.save-plans');
         Route::post('s-curves/{s_curve}/save-actuals', [App\Http\Controllers\ProjectReport\SCurveController::class, 'saveActuals'])->name('s-curves.save-actuals');

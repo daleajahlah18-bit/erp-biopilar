@@ -26,11 +26,30 @@ class SCurveController extends Controller
 
         return view('reports.s_curves.index', compact('sCurves', 'projects'));
     }
+    public function searchProjects(Request $request)
+    {
+        $q = $request->input('q');
+        
+        $projects = \App\Models\Project::with('sCurves')
+            ->where(function($query) use ($q) {
+                $query->where('project_number', 'like', "%{$q}%")
+                      ->orWhere('project_name', 'like', "%{$q}%")
+                      ->orWhere('client_name', 'like', "%{$q}%");
+            })
+            ->limit(10)
+            ->get();
+            
+        return response()->json($projects);
+    }
 
-    public function create()
+    public function create(Request $request)
     {
         $projects = \App\Models\Project::orderBy('project_name')->get();
-        return view('reports.s_curves.create', compact('projects'));
+        $selectedProject = null;
+        if ($request->filled('project_id')) {
+            $selectedProject = \App\Models\Project::find($request->project_id);
+        }
+        return view('reports.s_curves.create', compact('projects', 'selectedProject'));
     }
 
     public function store(Request $request)

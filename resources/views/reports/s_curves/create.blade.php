@@ -12,16 +12,28 @@
             <div class="card-body">
                 <form action="{{ route('s-curves.store') }}" method="POST">
                     @csrf
-                    <div class="mb-3">
-                        <label class="form-label font-weight-bold">Project <span class="text-danger">*</span></label>
-                        <select name="project_id" class="form-select select2" required>
-                            <option value="">-- Pilih Project --</option>
-                            @foreach($projects as $p)
-                                <option value="{{ $p->id }}" {{ old('project_id') == $p->id ? 'selected' : '' }}>{{ $p->project_name }}</option>
-                            @endforeach
-                        </select>
-                        @error('project_id') <span class="text-danger small">{{ $message }}</span> @enderror
-                    </div>
+                    @if(isset($selectedProject))
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold">Project <span class="text-danger">*</span></label>
+                            <input type="hidden" name="project_id" value="{{ $selectedProject->id }}">
+                            <div class="p-3 border rounded bg-light">
+                                <div class="fw-bold text-primary">{{ $selectedProject->project_number }}</div>
+                                <div class="text-dark">{{ $selectedProject->project_name }}</div>
+                                <small class="text-muted"><i class="bi bi-person-fill"></i> Client: {{ $selectedProject->client_name ?? '-' }}</small>
+                            </div>
+                        </div>
+                    @else
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold">Project <span class="text-danger">*</span></label>
+                            <select name="project_id" class="form-select select2" required>
+                                <option value="">-- Pilih Project --</option>
+                                @foreach($projects as $p)
+                                    <option value="{{ $p->id }}" {{ old('project_id') == $p->id ? 'selected' : '' }}>{{ $p->project_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('project_id') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+                    @endif
 
                     <div class="mb-3">
                         <label class="form-label font-weight-bold">Nama S-Curve <span class="text-danger">*</span></label>
@@ -32,12 +44,12 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label font-weight-bold">Tanggal Mulai <span class="text-danger">*</span></label>
-                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ old('start_date') }}" required>
+                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ old('start_date', isset($selectedProject) ? \Carbon\Carbon::parse($selectedProject->start_date)->format('Y-m-d') : '') }}" required>
                             @error('start_date') <span class="text-danger small">{{ $message }}</span> @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label font-weight-bold">Tanggal Selesai <span class="text-danger">*</span></label>
-                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ old('end_date') }}" required>
+                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ old('end_date', isset($selectedProject) ? \Carbon\Carbon::parse($selectedProject->end_date)->format('Y-m-d') : '') }}" required>
                             @error('end_date') <span class="text-danger small">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -53,6 +65,16 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    if(typeof jQuery !== 'undefined' && $.fn.select2) {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            placeholder: '-- Pilih Project --',
+            allowClear: true
+        });
+    }
+});
+
 function validateDates() {
     const start = document.getElementById('start_date').value;
     const end = document.getElementById('end_date').value;
