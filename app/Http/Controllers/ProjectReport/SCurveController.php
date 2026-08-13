@@ -28,16 +28,35 @@ class SCurveController extends Controller
     }
     public function searchProjects(Request $request)
     {
-        $q = $request->input('q');
+        $start = microtime(true);
+        \Illuminate\Support\Facades\Log::info('[PROJECT SEARCH] CONTROLLER START');
+
+        $q = trim($request->input('q', ''));
         
-        $projects = \App\Models\Project::with('sCurves')
-            ->where(function($query) use ($q) {
-                $query->where('project_number', 'like', "%{$q}%")
-                      ->orWhere('project_name', 'like', "%{$q}%")
-                      ->orWhere('client_name', 'like', "%{$q}%");
-            })
-            ->limit(10)
+        $query = \App\Models\Project::query()
+            ->select(['id', 'contract_number as project_number', 'project_name', 'client_name', 'project_start_date as start_date', 'project_end_date as end_date']);
+
+        if ($q !== '') {
+            $query->where(function($sub) use ($q) {
+                $sub->where('contract_number', 'like', "%{$q}%")
+                    ->orWhere('project_name', 'like', "%{$q}%")
+                    ->orWhere('client_name', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->boolean('with_scurves')) {
+            $query->with(['sCurves' => function($q) {
+                $q->select('id', 'project_id', 'name', 'start_date', 'end_date');
+            }]);
+        }
+        
+        $projects = $query->orderBy('contract_number')
+            ->limit(20)
             ->get();
+            
+        \Illuminate\Support\Facades\Log::info('[PROJECT SEARCH] QUERY FINISHED', [
+            'ms' => round((microtime(true) - $start) * 1000, 2)
+        ]);
             
         return response()->json($projects);
     }
@@ -50,6 +69,98 @@ class SCurveController extends Controller
             $selectedProject = \App\Models\Project::find($request->project_id);
         }
         return view('reports.s_curves.create', compact('projects', 'selectedProject'));
+    }
+
+    public function showImport()
+    {
+        $projects = \App\Models\Project::orderBy('project_name')->get();
+        return view('reports.s_curves.import', compact('projects'));
+    }
+
+    public function downloadTemplate(\App\Models\Project $project, \App\Services\SCurveExcelTemplateService $templateService)
+    {
+        $spreadsheet = $templateService->generateTemplate($project);
+        
+        $fileName = 'S-Curve_Import_' . preg_replace('/[^A-Za-z0-9\-]/', '_', $project->contract_number) . '.xlsx';
+        
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        
+        // Output stream
+        $response = new \Symfony\Component\HttpFoundation\StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+        
+        return $response;
+    }
+
+    public function analyzeImport(Request $request, \App\Services\SCurveExcelImportService $importService)
+    {
+        $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'excel_file' => 'required|file|mimes:xlsx,xls|max:10240',
+        ]);
+
+        // Duplicate Check
+        $exists = \App\Models\ProjectSCurve::where('project_id', $request->project_id)
+            ->where('name', $request->name)
+            ->where('start_date', $request->start_date)
+            ->where('end_date', $request->end_date)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'S-Curve dengan kombinasi Project, Nama, dan Periode yang sama sudah ada. Silakan edit S-Curve yang sudah ada atau gunakan nama/periode yang berbeda.');
+        }
+
+        try {
+            $parsedData = $importService->parse(
+                $request->file('excel_file'),
+                $request->project_id,
+                $request->name,
+                $request->start_date,
+                $request->end_date
+            );
+
+            // Store in cache with a unique token for 30 minutes
+            $token = \Illuminate\Support\Str::random(40);
+            \Illuminate\Support\Facades\Cache::put('SCurveImport:' . $token, $parsedData, now()->addMinutes(30));
+
+            $project = \App\Models\Project::find($request->project_id);
+
+            return view('reports.s_curves.import_preview', compact('parsedData', 'token', 'project'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Import gagal: ' . $e->getMessage());
+        }
+    }
+
+    public function confirmImport(Request $request, \App\Services\SCurveExcelImportService $importService)
+    {
+        $token = $request->input('token');
+        $parsedData = \Illuminate\Support\Facades\Cache::get('SCurveImport:' . $token);
+
+        if (!$parsedData) {
+            return redirect()->route('s-curves.import')->with('error', 'Sesi import telah kedaluwarsa. Silakan ulangi proses upload.');
+        }
+
+        if (!$parsedData['validation']['is_valid']) {
+            return redirect()->route('s-curves.import')->with('error', 'Data gagal divalidasi. Tidak dapat melanjutkan import.');
+        }
+
+        try {
+            $sCurve = $importService->import($parsedData);
+            \Illuminate\Support\Facades\Cache::forget('SCurveImport:' . $token);
+
+            return redirect()->route('s-curves.show', $sCurve->id)->with('success', 'S-Curve berhasil diimport dari Excel!');
+        } catch (\Exception $e) {
+            return redirect()->route('s-curves.import')->with('error', 'Terjadi kesalahan saat menyimpan ke database: ' . $e->getMessage());
+        }
     }
 
     public function store(Request $request)

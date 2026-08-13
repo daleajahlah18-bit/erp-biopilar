@@ -2,7 +2,10 @@
 @section('title', 'S-Curve')
 @section('page_title', 'S-Curve Project Progress')
 @section('header_actions')
-<a href="{{ route('s-curves.create') }}" class="btn-primary-custom"><i class="bi bi-plus-lg"></i> Buat S-Curve Baru</a>
+<div class="d-flex gap-2">
+    <a href="{{ route('s-curves.import') }}" class="btn btn-success text-white"><i class="bi bi-file-earmark-excel"></i> Import Excel</a>
+    <a href="{{ route('s-curves.create') }}" class="btn-primary-custom"><i class="bi bi-plus-lg"></i> Buat S-Curve Baru</a>
+</div>
 @endsection
 
 @section('content')
@@ -180,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(searchTimeout);
             const query = this.value.trim();
             
-            if (query.length === 0) {
+            if (query.length < 2) {
                 searchResults.style.display = 'none';
                 infoBlock.style.display = 'none';
                 return;
@@ -190,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
             searchResults.style.display = 'block';
             
             searchTimeout = setTimeout(() => {
-                fetch(`{{ route('s-curves.projects.search') }}?q=${encodeURIComponent(query)}`)
+                fetch(`{{ route('s-curves.projects.search') }}?with_scurves=1&q=${encodeURIComponent(query)}`)
                     .then(res => res.json())
                     .then(data => {
                         searchResults.innerHTML = '';

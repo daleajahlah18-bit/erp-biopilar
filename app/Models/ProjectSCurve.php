@@ -41,4 +41,12 @@ class ProjectSCurve extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public static function calculateProjectWeeks($startDate, $endDate)
+    {
+        $start = \Illuminate\Support\Carbon::parse($startDate)->startOfDay();
+        $end = \Illuminate\Support\Carbon::parse($endDate)->startOfDay();
+        $diffDays = $start->diffInDays($end);
+        return max(1, (int) ceil($diffDays / 7));
+    }
 }
