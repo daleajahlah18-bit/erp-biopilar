@@ -544,7 +544,28 @@
     @endfor
 
     const plannedData = {!! json_encode(array_values($cumPlans)) !!};
-    const actualData = {!! json_encode(array_values($cumActuals)) !!};
+    
+    @php
+        $maxActualWeek = 0;
+        foreach ($leafItems as $leaf) {
+            foreach ($leaf->actuals as $actual) {
+                if ($actual->week_number > $maxActualWeek) {
+                    $maxActualWeek = $actual->week_number;
+                }
+            }
+        }
+        
+        $chartActualData = [];
+        // Loop uses 1-indexed array mapping because $cumActuals is 1-indexed
+        for ($i = 1; $i <= $totalWeeks; $i++) {
+            if ($maxActualWeek > 0 && $i <= $maxActualWeek) {
+                $chartActualData[] = $cumActuals[$i];
+            } else {
+                $chartActualData[] = null;
+            }
+        }
+    @endphp
+    const actualData = {!! json_encode($chartActualData) !!};
 
     window.sCurveChartInstance = new Chart(ctx, {
         type: 'line',
