@@ -159,6 +159,64 @@
     </div>
 </div>
 
+<!-- S-Curve Data Source -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header py-3" style="background-color: #fff3cd; border-bottom: 1px solid #ffe69c;">
+        <h5 class="m-0 font-weight-bold text-center text-dark">S-CURVE DATA SOURCE:</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0 text-center text-nowrap" style="font-size: 0.85rem;">
+                <thead class="bg-light align-middle">
+                    <tr>
+                        <th class="text-start" style="min-width: 200px;">Metric</th>
+                        @for($w = 1; $w <= $totalWeeks; $w++)
+                            <th style="min-width: 60px;">W{{ $w }}</th>
+                        @endfor
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Plan Weekly -->
+                    <tr>
+                        <td class="text-start fw-bold">Plan Weekly (%)</td>
+                        @for($w = 1; $w <= $totalWeeks; $w++)
+                            <td class="text-primary">{{ number_format($weeklyPlans[$w] ?? 0, 2) }}</td>
+                        @endfor
+                    </tr>
+                    <!-- Actual Weekly -->
+                    <tr>
+                        <td class="text-start fw-bold">Actual Weekly (%)</td>
+                        @for($w = 1; $w <= $totalWeeks; $w++)
+                            <td class="text-danger">{{ number_format($weeklyActuals[$w] ?? 0, 2) }}</td>
+                        @endfor
+                    </tr>
+                    <!-- Plan Cumulative -->
+                    <tr>
+                        <td class="text-start fw-bold">Plan Cumulative (%)</td>
+                        @for($w = 1; $w <= $totalWeeks; $w++)
+                            <td class="text-primary">{{ number_format($cumPlans[$w] ?? 0, 2) }}</td>
+                        @endfor
+                    </tr>
+                    <!-- Actual Cumulative -->
+                    <tr>
+                        <td class="text-start fw-bold">Actual Cumulative (%)</td>
+                        @for($w = 1; $w <= $totalWeeks; $w++)
+                            <td class="text-danger">{{ number_format($cumActuals[$w] ?? 0, 2) }}</td>
+                        @endfor
+                    </tr>
+                    <!-- Deviation -->
+                    <tr>
+                        <td class="text-start fw-bold">Deviation (%)</td>
+                        @for($w = 1; $w <= $totalWeeks; $w++)
+                            <td class="text-danger">{{ number_format($differences[$w] ?? 0, 2) }}</td>
+                        @endfor
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <!-- Modals -->
 
 <!-- WBS Modal -->
