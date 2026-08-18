@@ -29,7 +29,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        $landingPage = RouteServiceProvider::getLandingPage();
+        
+        $intendedUrl = session()->pull('url.intended', $landingPage);
+        
+        // If the user's intended URL was /dashboard but they don't have permission,
+        // override it with their fallback URL
+        if (trim(parse_url($intendedUrl, PHP_URL_PATH), '/') === 'dashboard' && !auth()->user()->can('dashboard.visible')) {
+            $intendedUrl = url($landingPage);
+        }
+
+        return redirect()->to($intendedUrl);
     }
 
     /**

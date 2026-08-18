@@ -8,7 +8,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified', 'permission:dashboard.visible'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     // API Routes for internal AJAX calls
@@ -185,7 +185,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // S-Curves
-    Route::middleware('permission:project_report.visible')->group(function () {
+    Route::middleware('permission:s_curve.visible')->group(function () {
         Route::get('s-curves/projects/search', [App\Http\Controllers\ProjectReport\SCurveController::class, 'searchProjects'])->name('s-curves.projects.search');
         Route::get('s-curves/import', [App\Http\Controllers\ProjectReport\SCurveController::class, 'showImport'])->name('s-curves.import');
         Route::get('s-curves/import/template/{project}', [App\Http\Controllers\ProjectReport\SCurveController::class, 'downloadTemplate'])->name('s-curves.import.template');
