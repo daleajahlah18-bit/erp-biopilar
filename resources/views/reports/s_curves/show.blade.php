@@ -584,8 +584,8 @@
                 {
                     label: 'Actual Cumulative (%)',
                     data: actualData,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
                     borderWidth: 2,
                     tension: 0.3,
                     fill: true
