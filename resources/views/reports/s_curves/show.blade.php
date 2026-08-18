@@ -113,17 +113,46 @@
                 </thead>
                 <tbody>
                     @php
+                        function calculateTotalActual($node) {
+                            $directActual = 0;
+                            if (isset($node->actuals) && count($node->actuals) > 0) {
+                                foreach ($node->actuals as $a) {
+                                    $directActual += (float) $a->actual_percentage;
+                                }
+                                return $directActual;
+                            }
+                        
+                            $childActual = 0;
+                            if (isset($node->children_nodes) && is_array($node->children_nodes) && count($node->children_nodes) > 0) {
+                                foreach ($node->children_nodes as $child) {
+                                    $childActual += calculateTotalActual($child);
+                                }
+                            }
+                            
+                            return $childActual;
+                        }
+
                         function renderHtmlTree($nodes, $level, $totalWeeks, $weeklyPlans, $weeklyActuals) {
                             $html = '';
                             foreach ($nodes as $node) {
                                 $isParent = count($node->children_nodes) > 0;
                                 $padding = $level * 20;
                                 
+                                $totalActual = calculateTotalActual($node);
+                                
                                 $html .= '<tr>';
                                 $html .= '<td class="text-start" style="padding-left: '.$padding.'px;">';
                                 $html .= $isParent ? '<strong>'.$node->work_name.'</strong>' : $node->work_name;
                                 $html .= '</td>';
-                                $html .= '<td>'.($isParent ? '<strong>'.number_format($node->weight_percentage, 2).'</strong>' : number_format($node->weight_percentage, 2)).'</td>';
+                                
+                                $weightFormatted = number_format($node->weight_percentage, 2) . '%';
+                                if ($isParent) {
+                                    $weightFormatted = '<strong>' . $weightFormatted . '</strong>';
+                                }
+                                
+                                $actualFormatted = '<div class="small text-success mt-1">A: ' . number_format($totalActual, 2) . '</div>';
+                                
+                                $html .= '<td class="align-middle">' . $weightFormatted . $actualFormatted . '</td>';
                                 
                                 $plans = [];
                                 foreach ($node->plans as $p) $plans[$p->week_number] = $p->planned_percentage;
