@@ -108,4 +108,8 @@ class Project extends Model
         return $this->hasMany(Rab::class);
     }
 
+    public function financeExpenses()
+    {
+        return $this->hasMany(FinanceExpense::class, 'project_id');
+    }
 }

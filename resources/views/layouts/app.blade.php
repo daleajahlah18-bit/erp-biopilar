@@ -663,6 +663,26 @@
             </div>
             @endif
 
+            {{-- FINANCE --}}
+            @canany(['finance.visible'])
+            @php $isActive = request()->is('finance*'); @endphp
+            <div class="nav-item">
+                <a class="nav-link {{ $isActive ? 'active-parent' : 'collapsed' }}" href="#submenuFinance" data-bs-toggle="collapse" role="button" aria-expanded="{{ $isActive ? 'true' : 'false' }}">
+                    <i class="bi bi-wallet2"></i>
+                    <span>Finance</span>
+                    <i class="bi bi-chevron-down arrow-icon"></i>
+                </a>
+                <div class="collapse {{ $isActive ? 'show' : '' }}" id="submenuFinance" data-bs-parent="#sidebarNav">
+                    <ul class="sub-menu">
+                        <li><a href="{{ route('finance.dashboard') }}" class="sub-item {{ request()->routeIs('finance.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                        <li><a href="{{ route('finance.expenses.index') }}" class="sub-item {{ request()->routeIs('finance.expenses.*') ? 'active' : '' }}">Expenses</a></li>
+                        <li><a href="{{ route('finance.categories.index') }}" class="sub-item {{ request()->routeIs('finance.categories.*') ? 'active' : '' }}">Expense Categories</a></li>
+                        <li><a href="{{ route('finance.reports.index') }}" class="sub-item {{ request()->routeIs('finance.reports.*') ? 'active' : '' }}">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+            @endcanany
+
             {{-- ASSET MANAGEMENT --}}
             @canany(['asset_dashboard.visible', 'master_categories.visible', 'master_assets.visible', 'asset_reports.visible'])
             @php $isActive = request()->is('asset-management/*'); @endphp

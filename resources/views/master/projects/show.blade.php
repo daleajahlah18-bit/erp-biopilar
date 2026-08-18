@@ -15,6 +15,9 @@
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" aria-controls="documents" aria-selected="false">Documents</button>
   </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button" role="tab" aria-controls="finance" aria-selected="false">Finance</button>
+  </li>
 </ul>
 
 <div class="tab-content" id="projectTabsContent">
@@ -264,8 +267,72 @@
                 </table>
             </div>
         </div>
+            </div>
+        </div>
     </div>
   </div>
+
+  <!-- FINANCE TAB -->
+  <div class="tab-pane fade" id="finance" role="tabpanel" aria-labelledby="finance-tab">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Project Expenses</h6>
+            @can('finance.create')
+                <a href="{{ route('finance.expenses.create', ['project_id' => $project->id]) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-lg"></i> Record Expense
+                </a>
+            @endcan
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped m-0">
+                    <thead class="">
+                        <tr>
+                            <th>Date</th>
+                            <th>Expense No</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Paid To</th>
+                            <th class="text-end">Amount (Rp)</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($project->financeExpenses ?? [] as $expense)
+                            <tr>
+                                <td class="text-nowrap">{{ $expense->expense_date->format('d M Y') }}</td>
+                                <td>{{ $expense->expense_number }}</td>
+                                <td>{{ $expense->category->name ?? '-' }}</td>
+                                <td>{{ Str::limit($expense->description, 30) }}</td>
+                                <td>{{ $expense->paid_to ?? '-' }}</td>
+                                <td class="text-end text-nowrap fw-semibold">Rp {{ number_format($expense->amount, 2, ',', '.') }}</td>
+                                <td class="text-center">
+                                    @can('finance.view')
+                                    <a href="{{ route('finance.expenses.show', $expense) }}" class="btn btn-sm btn-outline-info" title="View"><i class="bi bi-eye"></i></a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">No expenses recorded for this project.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                    @if(isset($project->financeExpenses) && $project->financeExpenses->count() > 0)
+                    <tfoot>
+                        <tr>
+                            <td colspan="5" class="text-end fw-bold">TOTAL EXPENSE:</td>
+                            <td class="text-end fw-bold text-primary">Rp {{ number_format($project->financeExpenses->sum('amount'), 2, ',', '.') }}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                    @endif
+                </table>
+            </div>
+        </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Upload Modal -->

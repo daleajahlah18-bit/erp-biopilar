@@ -65,7 +65,7 @@ trait EnterpriseAuditTrail
     {
         $possibleColumns = [
             'po_number', 'invoice_number', 'report_number', 'payment_number', 
-            'order_number', 'code', 'employee_id', 'name', 'title'
+            'order_number', 'code', 'employee_id', 'name', 'title', 'expense_number'
         ];
 
         foreach ($possibleColumns as $column) {

@@ -205,6 +205,23 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [App\Http\Controllers\Reports\ProjectDocumentController::class, 'store'])->name('store');
         Route::delete('{id}', [App\Http\Controllers\Reports\ProjectDocumentController::class, 'destroy'])->name('destroy');
     });
+
+    // Finance Module
+    Route::prefix('finance')->name('finance.')->middleware('permission:finance.visible')->group(function () {
+        Route::get('/', [App\Http\Controllers\Finance\FinanceDashboardController::class, 'index'])->name('dashboard');
+        
+        // Categories
+        Route::resource('categories', App\Http\Controllers\Finance\ExpenseCategoryController::class)->except('show');
+        
+        // Expenses
+        Route::get('expenses/search-projects', [App\Http\Controllers\Finance\ExpenseController::class, 'searchProjects'])->name('expenses.projects.search');
+        Route::get('expenses/{expense}/pdf', [App\Http\Controllers\Finance\ExpenseController::class, 'exportPdf'])->name('expenses.pdf');
+        Route::get('expenses/{expense}/download-attachment/{attachment}', [App\Http\Controllers\Finance\ExpenseController::class, 'downloadAttachment'])->name('expenses.download-attachment');
+        Route::resource('expenses', App\Http\Controllers\Finance\ExpenseController::class);
+        
+        // Reports
+        Route::get('reports', [App\Http\Controllers\Finance\FinanceReportController::class, 'index'])->name('reports.index');
+    });
 });
 
 
