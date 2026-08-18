@@ -758,12 +758,12 @@
     <!-- MAIN CONTENT -->
     <div class="main-wrapper">
         <div class="page-content">
-            <div class="page-header d-flex justify-content-between align-items-end">
+            <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-end gap-3 mb-4">
                 <div>
-                    <h1>@yield('page_title')</h1>
-                    <p>@yield('page_subtitle')</p>
+                    <h1 class="mb-0">@yield('page_title')</h1>
+                    <p class="mb-0 text-muted">@yield('page_subtitle')</p>
                 </div>
-                <div>
+                <div class="w-100 w-md-auto text-start text-md-end">
                     @yield('header_actions')
                 </div>
             </div>

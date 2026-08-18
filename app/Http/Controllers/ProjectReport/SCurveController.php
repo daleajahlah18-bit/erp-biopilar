@@ -157,6 +157,11 @@ class SCurveController extends Controller
             $sCurve = $importService->import($parsedData);
             \Illuminate\Support\Facades\Cache::forget('SCurveImport:' . $token);
 
+            activity()
+                ->performedOn($sCurve)
+                ->causedBy(auth()->user())
+                ->log("Imported S-Curve \"{$sCurve->name}\" from Excel");
+
             return redirect()->route('s-curves.show', $sCurve->id)->with('success', 'S-Curve berhasil diimport dari Excel!');
         } catch (\Exception $e) {
             return redirect()->route('s-curves.import')->with('error', 'Terjadi kesalahan saat menyimpan ke database: ' . $e->getMessage());
@@ -184,6 +189,12 @@ class SCurveController extends Controller
             ]);
 
             \Illuminate\Support\Facades\DB::commit();
+
+            activity()
+                ->performedOn($sCurve)
+                ->causedBy(auth()->user())
+                ->log("Created S-Curve \"{$sCurve->name}\"");
+
             return redirect()->route('s-curves.show', $sCurve->id)->with('success', 'S-Curve created successfully.');
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
@@ -392,6 +403,12 @@ class SCurveController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
+
+            activity()
+                ->performedOn($sCurve)
+                ->causedBy(auth()->user())
+                ->log("Updated Plan Progress for S-Curve \"{$sCurve->name}\"");
+
             return response()->json(['success' => true, 'message' => 'Plans saved successfully.']);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
@@ -433,6 +450,12 @@ class SCurveController extends Controller
             }
 
             \Illuminate\Support\Facades\DB::commit();
+
+            activity()
+                ->performedOn($sCurve)
+                ->causedBy(auth()->user())
+                ->log("Updated Actual Progress for S-Curve \"{$sCurve->name}\"");
+
             return response()->json(['success' => true, 'message' => 'Actuals saved successfully.']);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
@@ -444,7 +467,13 @@ class SCurveController extends Controller
     {
         try {
             $sCurve = \App\Models\ProjectSCurve::findOrFail($id);
+            $sCurveName = $sCurve->name;
             $sCurve->delete();
+
+            activity()
+                ->causedBy(auth()->user())
+                ->log("Deleted S-Curve \"{$sCurveName}\"");
+
             return redirect()->route('s-curves.index')->with('success', 'S-Curve deleted successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete S-Curve: ' . $e->getMessage());

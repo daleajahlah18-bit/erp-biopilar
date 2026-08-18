@@ -2,13 +2,15 @@
 @section('title', 'S-Curve Dashboard')
 @section('page_title', 'Dashboard: ' . $sCurve->name)
 @section('header_actions')
-<a href="{{ route('s-curves.index') }}" class="btn-outline-secondary btn"><i class="bi bi-arrow-left"></i> Kembali</a>
-<form action="{{ route('s-curves.pdf', $sCurve) }}" method="POST" id="pdfExportForm" class="d-inline ms-2">
-    @csrf
-    <input type="hidden" name="chart_image" id="chart_image_input">
-    <button type="button" class="btn-outline-danger btn" id="exportPdfBtn"><i class="bi bi-file-pdf"></i> Export PDF</button>
-</form>
-<a href="{{ route('s-curves.excel', $sCurve) }}" class="btn-success btn ms-2"><i class="bi bi-file-excel"></i> Export Excel</a>
+<div class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end mt-2 mt-md-0">
+    <a href="{{ route('s-curves.index') }}" class="btn-outline-secondary btn"><i class="bi bi-arrow-left"></i> Kembali</a>
+    <form action="{{ route('s-curves.pdf', $sCurve) }}" method="POST" id="pdfExportForm" class="m-0">
+        @csrf
+        <input type="hidden" name="chart_image" id="chart_image_input">
+        <button type="button" class="btn-outline-danger btn" id="exportPdfBtn"><i class="bi bi-file-pdf"></i> Export PDF</button>
+    </form>
+    <a href="{{ route('s-curves.excel', $sCurve) }}" class="btn-success btn"><i class="bi bi-file-excel"></i> Export Excel</a>
+</div>
 @endsection
 
 @section('content')
