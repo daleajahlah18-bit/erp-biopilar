@@ -36,7 +36,7 @@ class SCurveExcelImportService
 
         $project = Project::find($projectId);
         
-        if ($metaProjectId !== $project->id) {
+        if ($metaProjectId !== $project->id && $metaProjectNumber !== $project->contract_number) {
             throw new \Exception("❌ Project mismatch!\nSelected Project: {$project->contract_number}\nTemplate Project: {$metaProjectNumber}");
         }
 

@@ -99,14 +99,16 @@
                             @endif
                         </td>
                         <td>{{ $project->person_in_charge }}</td>
-                        <td class="text-end">
-                            <a href="{{ route('master.projects.pdf', $project) }}" class="btn btn-sm btn-outline-danger me-1" target="_blank" title="Print PDF"><i class="bi bi-file-earmark-pdf"></i></a>
-                            <a href="{{ route('master.projects.show', $project) }}" class="btn btn-sm btn-outline-info me-1"><i class="bi bi-eye"></i></a>
-                            <a href="{{ route('master.projects.edit', $project) }}" class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-pencil"></i></a>
-                            <form action="{{ route('master.projects.destroy', $project) }}" method="POST" class="d-inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="event.preventDefault(); confirmDelete(() => this.closest('form').submit(), 'Hapus Data?', 'Yakin hapus project ini?')"><i class="bi bi-trash"></i></button>
-                            </form>
+                        <td class="text-end text-nowrap">
+                            <div class="d-flex justify-content-end gap-1">
+                                <a href="{{ route('master.projects.pdf', $project) }}" class="btn btn-sm btn-outline-danger" target="_blank" title="Print PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+                                <a href="{{ route('master.projects.show', $project) }}" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
+                                <a href="{{ route('master.projects.edit', $project) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                                <form action="{{ route('master.projects.destroy', $project) }}" method="POST" class="m-0 p-0">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="event.preventDefault(); confirmDelete(() => this.closest('form').submit(), 'Hapus Data?', 'Yakin hapus project ini?')"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty

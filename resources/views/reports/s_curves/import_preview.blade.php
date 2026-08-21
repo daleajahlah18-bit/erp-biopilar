@@ -82,42 +82,61 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($parsedData['items'] as $item)
-                                @if($item['is_parent'])
-                                    <tr class="bg-light fw-bold">
-                                        <td>{{ $item['code'] }}</td>
-                                        <td>{{ $item['name'] }}</td>
-                                        <td class="text-center">{{ round($item['weight'], 2) }}%</td>
-                                        <td class="text-center text-muted">-</td>
-                                        <td class="text-center text-muted">-</td>
-                                    </tr>
-                                    @foreach($item['children'] as $child)
-                                        <tr>
-                                            <td class="ps-3">{{ $child['code'] }}</td>
-                                            <td class="ps-3">{{ $child['name'] }}</td>
-                                            <td class="text-center">{{ round($child['weight'], 2) }}%</td>
-                                            <td class="text-center {!! count($child['plan']) > 0 ? 'text-success' : 'text-danger' !!}">
-                                                {!! count($child['plan']) > 0 ? '<i class="bi bi-check-circle"></i> Detected' : '<i class="bi bi-x-circle"></i> None' !!}
-                                            </td>
-                                            <td class="text-center {!! count($child['actual']) > 0 ? 'text-success' : 'text-muted' !!}">
-                                                {!! count($child['actual']) > 0 ? '<i class="bi bi-check-circle"></i> Detected' : '-' !!}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td>{{ $item['code'] }}</td>
-                                        <td>{{ $item['name'] }}</td>
-                                        <td class="text-center">{{ round($item['weight'], 2) }}%</td>
-                                        <td class="text-center {!! count($item['plan']) > 0 ? 'text-success' : 'text-danger' !!}">
-                                            {!! count($item['plan']) > 0 ? '<i class="bi bi-check-circle"></i> Detected' : '<i class="bi bi-x-circle"></i> None' !!}
-                                        </td>
-                                        <td class="text-center {!! count($item['actual']) > 0 ? 'text-success' : 'text-muted' !!}">
-                                            {!! count($item['actual']) > 0 ? '<i class="bi bi-check-circle"></i> Detected' : '-' !!}
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
+                            @php
+                                if (!function_exists('renderPreviewHtmlTree')) {
+                                    function renderPreviewHtmlTree($nodes, $level = 0) {
+                                        $html = '';
+                                        foreach ($nodes as $node) {
+                                            $isParent = !empty($node['is_parent']);
+                                            $padding = $level * 20;
+                                            
+                                            // Optional: visual distinction for levels
+                                            // level 0 = no indent, level 1 = 20px, level 2 = 40px, etc.
+                                            
+                                            $weight = round($node['weight'], 2) . '%';
+                                            $hasPlan = count($node['plan']) > 0;
+                                            $hasActual = count($node['actual']) > 0;
+                                            
+                                            $codeEscaped = htmlspecialchars((string) $node['code']);
+                                            $nameEscaped = htmlspecialchars((string) $node['name']);
+                                            
+                                            if ($isParent) {
+                                                // Parent Row
+                                                $html .= '<tr class="bg-light fw-bold">';
+                                                $html .= '<td style="padding-left: ' . ($padding + 10) . 'px;">' . $codeEscaped . '</td>';
+                                                $html .= '<td>' . $nameEscaped . '</td>';
+                                                $html .= '<td class="text-center">' . $weight . '</td>';
+                                                $html .= '<td class="text-center text-muted">-</td>';
+                                                $html .= '<td class="text-center text-muted">-</td>';
+                                                $html .= '</tr>';
+                                                
+                                                // Recursive call for children
+                                                if (!empty($node['children'])) {
+                                                    $html .= renderPreviewHtmlTree($node['children'], $level + 1);
+                                                }
+                                            } else {
+                                                // Leaf Row
+                                                $html .= '<tr>';
+                                                $html .= '<td style="padding-left: ' . ($padding + 10) . 'px;">' . $codeEscaped . '</td>';
+                                                $html .= '<td>' . $nameEscaped . '</td>';
+                                                $html .= '<td class="text-center">' . $weight . '</td>';
+                                                
+                                                $planStr = $hasPlan ? '<i class="bi bi-check-circle"></i> Detected' : '<i class="bi bi-x-circle"></i> None';
+                                                $planClass = $hasPlan ? 'text-success' : 'text-danger';
+                                                $html .= '<td class="text-center ' . $planClass . '">' . $planStr . '</td>';
+                                                
+                                                $actualStr = $hasActual ? '<i class="bi bi-check-circle"></i> Detected' : '-';
+                                                $actualClass = $hasActual ? 'text-success' : 'text-muted';
+                                                $html .= '<td class="text-center ' . $actualClass . '">' . $actualStr . '</td>';
+                                                
+                                                $html .= '</tr>';
+                                            }
+                                        }
+                                        return $html;
+                                    }
+                                }
+                            @endphp
+                            {!! renderPreviewHtmlTree($parsedData['items'], 0) !!}
                         </tbody>
                     </table>
                 </div>

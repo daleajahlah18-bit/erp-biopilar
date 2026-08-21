@@ -128,12 +128,14 @@
                             <div class="small text-muted">End: {{ \Carbon\Carbon::parse($sc->end_date)->format('d M Y') }}</div>
                         </td>
                         <td>{{ $sc->creator->name ?? '-' }}</td>
-                        <td class="text-end">
-                            <a href="{{ route('s-curves.show', $sc) }}" class="btn btn-sm btn-outline-info me-1"><i class="bi bi-eye"></i> Dashboard</a>
-                            <form action="{{ route('s-curves.destroy', $sc) }}" method="POST" class="d-inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="event.preventDefault(); confirmDelete(() => this.closest('form').submit(), 'Hapus Data?', 'Yakin hapus S-Curve ini?')"><i class="bi bi-trash"></i></button>
-                            </form>
+                        <td class="text-end text-nowrap">
+                            <div class="d-flex justify-content-end gap-1">
+                                <a href="{{ route('s-curves.show', $sc) }}" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i> Dashboard</a>
+                                <form action="{{ route('s-curves.destroy', $sc) }}" method="POST" class="m-0 p-0">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="event.preventDefault(); confirmDelete(() => this.closest('form').submit(), 'Hapus Data?', 'Yakin hapus S-Curve ini?')"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
