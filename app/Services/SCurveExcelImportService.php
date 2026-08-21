@@ -80,8 +80,17 @@ class SCurveExcelImportService
         $maxColIndex = 5 + ($metaTotalWeek * 2);
 
         for ($row = $startRow; $row <= $highestRow; $row++) {
-            $wbs = trim((string)$sheet->getCellByColumnAndRow(2, $row)->getCalculatedValue()); // B
-            $parentWbs = trim((string)$sheet->getCellByColumnAndRow(3, $row)->getCalculatedValue()); // C
+            $wbs = trim((string)$sheet->getCellByColumnAndRow(2, $row)->getValue()); // B
+            
+            // Kolom C dibaca, namun kita tetap men-generate secara dinamis untuk menjamin kebenaran hirarki
+            $parts = explode('.', $wbs);
+            if (count($parts) > 1) {
+                array_pop($parts);
+                $parentWbs = implode('.', $parts);
+            } else {
+                $parentWbs = ''; // root
+            }
+
             $name = trim((string)$sheet->getCellByColumnAndRow(4, $row)->getCalculatedValue()); // D
             $weightVal = $sheet->getCellByColumnAndRow(5, $row)->getCalculatedValue(); // E
             
@@ -190,9 +199,13 @@ class SCurveExcelImportService
 
         foreach ($flatItems as &$item) {
             $parentCode = (string)$item['parent_code'];
-            if ($parentCode !== '' && isset($itemsByCode[$parentCode])) {
-                $itemsByCode[$parentCode]['children'][] = &$item;
-                $itemsByCode[$parentCode]['is_parent'] = true;
+            if ($parentCode !== '') {
+                if (isset($itemsByCode[$parentCode])) {
+                    $itemsByCode[$parentCode]['children'][] = &$item;
+                    $itemsByCode[$parentCode]['is_parent'] = true;
+                }
+                // Jika parentCode !== '' tetapi tidak ditemukan di $itemsByCode, 
+                // KITA TIDAK MEMASUKKANNYA KE DALAM ROOT. Ia akan ditangkap oleh validasi.
             } else {
                 $hierarchy[] = &$item;
             }
@@ -215,8 +228,15 @@ class SCurveExcelImportService
                 'total_leaf_weight' => 0
             ];
         }
+        
+        $allWbsCodes = array_column($data['flat_items'], 'code');
 
         foreach ($data['flat_items'] as $item) {
+            // Validate Parent exists
+            if ($item['parent_code'] !== '' && !in_array($item['parent_code'], $allWbsCodes)) {
+                $errors[] = "WBS [{$item['code']}] memiliki Parent WBS [{$item['parent_code']}] yang tidak ditemukan di dokumen.";
+            }
+
             if ($item['is_parent']) {
                 // Check if Parent Weight = Sum of Children
                 $childWeightSum = 0;
